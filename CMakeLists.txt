@@ -1,7 +1,7 @@
 
 cmake_minimum_required (VERSION 3.7)
 
-project (roket_launcher VERSION 0.20 LANGUAGES CXX)
+project (plane_and_earth_interception VERSION 0.20 LANGUAGES CXX)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
@@ -43,6 +43,8 @@ endif()
 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/log")
 set (LOG_DIR "${CMAKE_CURRENT_BINARY_DIR}/log")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/meshes")
+set (STL_MESH_FILE "${CMAKE_CURRENT_BINARY_DIR}/meshes/mesh.stl")
 
 configure_file(${conf_dir}/config.h.in ${conf_dir}/config.h)
 
@@ -72,6 +74,9 @@ set (HEADERS
 	${conf_dir}/config.h
 	${h_dir}/runge_kuta.h
 	${h_dir}/ode_solver.h
+	${h_dir}/polygon.h
+	${h_dir}/base_mesh.h
+	${h_dir}/mesh.h
 	)
 
 set (SOURCES
@@ -91,6 +96,8 @@ set (SOURCES
 	${s_dir}/bz_curve.cpp
 	${s_dir}/xy_circle.cpp
 	${s_dir}/sphere.cpp
+	${s_dir}/polygon.cpp
+	${s_dir}/mesh.cpp
 	${HEADERS}
 	#program/main.cpp)
 	#${s_dir}/csv_parser.cpp ${h_dir}/csv_parser.h

@@ -11,6 +11,7 @@
 #include "velocity.h"
 #include "sphere.h"
 #include "log.h"
+#include "mesh.h"
 
 #include "roket_ode.h"
 
@@ -21,6 +22,27 @@
 
 int main(int argc, char** argv)	
 {	
+	std::cout << "Hi" << std::endl;
+	VertexMesh mesh;
+	double dlat = 0.10;
+	double dlon = 0.10;
+	for (double lat = 0; lat < atan(1)*8; lat += dlat) {
+		for (double lon = 0; lon < atan(1)*8; lon += dlon) {
+			Point p0 = earth::geo(0, lat,      lon);
+			Point p1 = earth::geo(0, lat+dlat, lon);
+			Point p2 = earth::geo(0, lat,      lon+dlon);
+			Point p3 = earth::geo(0, lat+dlat, lon+dlon);
+			Polygon pl0(p0, p1, p2);
+			Polygon pl1(p2, p3, p1);
+			mesh.add_polygon(pl0);
+			mesh.add_polygon(pl1);
+		}
+	}
+	std::ofstream file(STL_MESH_FILE);
+	mesh.dump_to_stl(file);
+	file.close();
+	std::cout << "Bye" << std::endl;
+#if 0
 	Stage s0(250, 4000000, 171000,170000);
 	Stage s1(270, 800000, 101000,100000);
 	Stage s2(320, 290000, 9500+25000,25000);
@@ -50,6 +72,7 @@ int main(int argc, char** argv)
 		//std::cout << (step * i) << ", " << __a.step() << std::endl;
 	}
 	std::cout << s0.T_max() << " " << s1.T_max() << " " << s2.T_max() << " " << r.T_max() << std::endl;
+#endif
 
 
 

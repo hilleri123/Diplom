@@ -3,6 +3,7 @@
 
 #cmakedefine USE_BOOST_LOG
 #cmakedefine LOG_DIR "@LOG_DIR@"
+#cmakedefine STL_MESH_FILE "@STL_MESH_FILE@"
 #cmakedefine PRINT_USE_GEO
 
 
