@@ -1,0 +1,9 @@
+
+#pragma once
+
+#cmakedefine USE_BOOST_LOG
+#cmakedefine LOG_DIR "@LOG_DIR@"
+#cmakedefine PRINT_USE_GEO
+
+
+
