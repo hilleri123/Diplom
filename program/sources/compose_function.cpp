@@ -1,5 +1,5 @@
 
-#include "function.h"
+#include "compose_function.h"
 
 Interval::Interval(double begin, double end)
 	: _begin(begin), _end(end)

@@ -3,23 +3,40 @@
 
 
 
-Line::Line(Point p0, Point p1, Matrix m)
-	: _point(p0), _vector(Vector(p0,p1)), _matrix(m)
+Line::Line(Point p0, Point p1)
+	: _start(p0), _end(p1)
 {}
 
-Line::Line(Point p, Vector v, Matrix m)
-	: _point(p0), _vector(v), _matrix(m)
+Line::Line(Point p, Vector v)
+	: _start(p), _end(p+v)
 {}
 
 
-bool Line::init() const 
+Vector Line::dir() const 
 {
-	return Vector::norm(_vector) != 0;
-	//return !equal(Vector::norm(_vector), 0);
+	return Vector(_start, _end).normolize();
+}
+
+
+Point Line::start() const 
+{
+	return _start;
+}
+
+Point Line::end() const 
+{
+	return _end;
 }
 
 Point Line::operator()(double t) const
-{}
+{
+	if (t < 0)
+		return _start;
+	else if (t > 1)
+		return _end;
+	return _start+t*Vector(_start, _end);
+}
+
 
 
 Line::~Line()

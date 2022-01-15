@@ -8,29 +8,29 @@
 
 
 
-class Line : base_init
+class Line 
 {
 public:
-	explicit Line(Point, Point, Matrix m = Matrix());
+	explicit Line(Point a = Point(0,0,0), Point b = Point(0,0,0));
 
-	Line(Point, Vector, Matrix m = Matrix());
+	Line(Point, Vector);
 
 	Line(const Line&) = default;
 	Line(Line&&) = default;
 	Line& operator=(const Line&) = default;
 	Line& operator=(Line&&) = default;
 
-	virtual bool init() override;
-
 	Point operator()(double t) const;
 
+	Vector dir() const;
 
+	Point start() const;
+	Point end() const;
 
-	virtual ~Line() override;
+	virtual ~Line();
 
 protected:
-	Point _point;
-	Vector _vector;
-	Matrix _matrix;
+	Point _start;
+	Point _end;
 };
 

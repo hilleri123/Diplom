@@ -6,9 +6,9 @@
 //#include "function.h"
 //#include "csv_parser.h"
 //#include "space/functions/velocity.h"
-#include "compose_function.h"
-#include "csv_parser.h"
-#include "velocity.h"
+//#include "compose_function.h"
+//#include "csv_parser.h"
+//#include "velocity.h"
 #include "sphere.h"
 #include "log.h"
 #include "mesh.h"
@@ -22,7 +22,7 @@
 
 int main(int argc, char** argv)	
 {	
-#if 1
+#if 0
 	std::cout << "Hi" << std::endl;
 	VertexMesh mesh;
 	double dlat = 0.10;
@@ -44,15 +44,47 @@ int main(int argc, char** argv)
 	file.close();
 	std::cout << "Bye" << std::endl;
 #endif
-#if 0
-	Point p0(0,0,0);
-	Point p1(1,0,0);
-	Point p2(0,1,0);
-	Point lp0(0,0,1);
-	Point lp1(0,0,-1);
-	Line l0(lp0, lp1);
-	Polygon pl0(p0, p1, p2);
-	auto res = plo.suppression();
+#if 1
+	Point o(0,0,0);
+	Point p100(1,0,0);
+	Point p010(0,1,0);
+	Point p001(0,0,1);
+	Point p00_1(0,0,-1);
+	Point p_1_10(-1,-1,0);
+	{
+		Line l0(p001, p00_1);
+		Polygon pl0(o, p100, p010);
+		auto res = pl0.suppression(l0);
+		assert(res.first.first);
+		assert(res.first.second == 0);
+	}
+	{
+		Line l0(p001, p00_1);
+		Polygon pl0(p_1_10, p100, p010);
+		auto res = pl0.suppression(l0);
+		assert(res.first.first);
+		assert(res.first.second == 0);
+	}
+	{
+		Line l0(p001, p00_1);
+		Polygon pl0(p001, p100, p010);
+		auto res = pl0.suppression(l0);
+		assert(res.first.first);
+		assert(res.first.second == p001);
+	}
+	{
+		Line l0(p001, p00_1);
+		Polygon pl0(p_1_10, p100, p00_1);
+		auto res = pl0.suppression(l0);
+		assert(res.first.first);
+		assert(res.first.second == p00_1);
+	}
+	{
+		Line l0(p001, p_1_10);
+		Polygon pl0(o, p100, p010);
+		auto res = pl0.suppression(l0);
+		assert(!res.first.first);
+	}
 #endif
 #if 0
 	Stage s0(250, 4000000, 171000,170000);

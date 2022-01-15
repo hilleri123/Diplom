@@ -24,6 +24,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 
 set (h_dir "${CMAKE_CURRENT_LIST_DIR}/program/headers")
 set (s_dir "${CMAKE_CURRENT_LIST_DIR}/program/sources")
+set (test_dir "${CMAKE_CURRENT_LIST_DIR}/program/tests")
 
 set (conf_dir "${CMAKE_CURRENT_LIST_DIR}/program/config")
 
@@ -55,7 +56,7 @@ include_directories (${h_dir} ${h_dir} ${h_dir} ${conf_dir} ${ma_dir} program/sp
 
 set (HEADERS
 	${h_dir}/csv_parser.h
-	${h_dir}/function.h
+	${h_dir}/compose_function.h
 	${h_dir}/log.h
 	${CMAKE_CURRENT_LIST_DIR}/program/init.h
 	${h_dir}/combinator.h
@@ -68,6 +69,7 @@ set (HEADERS
 	${h_dir}/trans_matrix.h
 	${h_dir}/point.h
 	${h_dir}/vector.h
+	${h_dir}/line.h
 	${h_dir}/bz_curve.h
 	${h_dir}/xy_circle.h
 	${h_dir}/sphere.h
@@ -79,9 +81,14 @@ set (HEADERS
 	${h_dir}/mesh.h
 	)
 
+set (TEST_SOURCES
+	${test_dir}/polygon_test.cpp
+	)
+
+
 set (SOURCES
 	${s_dir}/csv_parser.cpp
-	${s_dir}/function.cpp
+	${s_dir}/compose_function.cpp
 	${s_dir}/log.cpp
 	${s_dir}/combinator.cpp
 	${s_dir}/part_of_function.cpp
@@ -93,12 +100,14 @@ set (SOURCES
 	${s_dir}/trans_matrix.cpp
 	${s_dir}/point.cpp
 	${s_dir}/vector.cpp
+	${s_dir}/line.cpp
 	${s_dir}/bz_curve.cpp
 	${s_dir}/xy_circle.cpp
 	${s_dir}/sphere.cpp
 	${s_dir}/polygon.cpp
 	${s_dir}/mesh.cpp
 	${HEADERS}
+	#${TEST_SOURCES}
 	#program/main.cpp)
 	#${s_dir}/csv_parser.cpp ${h_dir}/csv_parser.h
 	#${s_dir}/function.cpp ${h_dir}/function.h
@@ -166,18 +175,26 @@ if (Boost_FOUND)
 	target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 	#target_link_libraries(local_${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 
+	foreach (test_path IN LISTS TEST_SOURCES)
+		get_filename_component(test ${test_path} NAME_WE)
+		message(STATUS "path = '${test_path}' filename = '${test}'")
+		add_executable (${test}_${PROJECT_NAME} ${SOURCES} ${test_path})
+		target_link_libraries(${test}_${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
+	endforeach()
 endif()
 
-file(MAKE_DIRECTORY "${HEADERS_DIR}/${PROJECT_NAME}/")
-foreach (myheader_path IN LISTS HEADERS)
-	get_filename_component(myheader ${myheader_path} NAME)
-	message(STATUS "path = '${myheader_path}' filename = '${myheader}'")
-	add_custom_command(TARGET ${STATIC_NAME} POST_BUILD
-		COMMAND "${CMAKE_COMMAND}" -E copy
-		"${myheader_path}"
-		"${HEADERS_DIR}/${PROJECT_NAME}/"
-		COMMENT "Copying ${myheader_path}"
-		)
-endforeach()
+if (FALSE)
+	file(MAKE_DIRECTORY "${HEADERS_DIR}/${PROJECT_NAME}/")
+	foreach (myheader_path IN LISTS HEADERS)
+		get_filename_component(myheader ${myheader_path} NAME)
+		message(STATUS "path = '${myheader_path}' filename = '${myheader}'")
+		add_custom_command(TARGET ${STATIC_NAME} POST_BUILD
+			COMMAND "${CMAKE_COMMAND}" -E copy
+			"${myheader_path}"
+			"${HEADERS_DIR}/${PROJECT_NAME}/"
+			COMMENT "Copying ${myheader_path}"
+			)
+	endforeach()
+endif()
 
 
