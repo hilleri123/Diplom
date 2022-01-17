@@ -13,7 +13,8 @@
 
 class VertexMesh : public BaseMesh
 {
-	using VertexList = std::vector<std::pair<Point, std::set<std::size_t>>>;
+	using VertexPoint = std::pair<Point, std::set<std::size_t>>;
+	using VertexList = std::vector<VertexPoint>;
 public:
 	VertexMesh();
 	virtual ~VertexMesh() override;

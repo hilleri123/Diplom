@@ -1,6 +1,7 @@
 #include "mesh.h"
 #include <iterator>
 #include <cassert>
+#include <algorithm>
 
 VertexMesh::VertexMesh() {}
 
@@ -37,11 +38,9 @@ bool VertexMesh::add_polygon(const Polygon& pl)
 	assert(to_append.size() == points.size());
 	
 	for (auto p = to_append.begin(); p < to_append.end(); p++) {
-		auto& curr = _vertex_list[*p];
+		VertexPoint& curr = _vertex_list[*p];
 		curr.second.insert(to_append.begin(), p);
 		curr.second.insert(p+1, to_append.end());
-		//curr.second.insert(curr.second.end(), to_append.begin(), p);
-		//curr.second.insert(curr.second.end(), p+1, to_append.end());
 	}
 	return true;
 }
@@ -52,12 +51,30 @@ bool VertexMesh::dump_to_stl(std::ostream& s) const
 	std::set<std::size_t> printed;
 	for (auto row = _vertex_list.begin(); row < _vertex_list.end(); row++) {
 		//s << (row - _vertex_list.begin()) << " " << row->first << " [";
+		std::vector<std::pair<std::size_t, std::size_t>> tmp_printed;
 		for (auto i : row->second) {
 			std::set<std::size_t> tmp;
 			auto& curr = _vertex_list[i];
 			std::set_intersection(row->second.begin(), row->second.end(), curr.second.begin(), curr.second.end(), std::inserter(tmp, tmp.begin()));
 			assert(tmp.size() == 1);
-			Polygon pl(row->first, curr.first, _vertex_list[*tmp.begin()].first);
+			std::size_t third = *tmp.begin();
+			bool already_printed = false;
+			already_printed |= printed.find(i) != printed.end();
+			already_printed |= printed.find(third) != printed.end();
+			for (auto pair : tmp_printed) {
+				if (already_printed)
+					break;
+				already_printed |= pair.first == i && pair.second == third;
+				already_printed |= pair.first == third && pair.second == i;
+			}
+			if (already_printed) {
+				//std::cout << (row-_vertex_list.begin()) << " printed ignored " << i << " " << third << std::endl;
+				//std::cout << "printed ignored " << i << " " << (*tmp.begin()) << std::endl;
+				continue;
+			}
+			//std::cout << (row-_vertex_list.begin()) << " opened " << i << " " << third << std::endl;
+			tmp_printed.push_back(std::make_pair(i, third));
+			Polygon pl(row->first, curr.first, _vertex_list[third].first);
 			Vector v = pl.get_norm();
 			s << "facet normal " << v.x() << " " << v.y() << " " << v.z() << std::endl;
 			s << "outer loop" << std::endl;

@@ -14,7 +14,11 @@ def show_stl():
         figure = plt.figure()
         axes = mplot3d.Axes3D(figure)
         your_mesh = mesh.Mesh.from_file(file_name)
-        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+        print(dir(your_mesh.points[0]))
+        all_colors = ("tab:orange", "tab:blue", "tab:green", "tab:grey")
+        colors = [np.random.choice(all_colors) for vec in your_mesh.vectors]
+        colors = ("tab:orange", "tab:blue", "tab:green", "tab:grey")
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors, facecolor = colors))
 
         scale = your_mesh.points.flatten('F')
         axes.auto_scale_xyz(scale, scale, scale)
