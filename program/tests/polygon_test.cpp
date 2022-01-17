@@ -49,6 +49,11 @@ int main(int argc, char** argv)
 	Point p100(1,0,0);
 	Point p010(0,1,0);
 	Point p001(0,0,1);
+	Point p011(0,1,1);
+	Point p002(0,0,2);
+	Point p003(0,0,3);
+	Point p022(0,2,2);
+	Point p021(0,2,1);
 	Point p00_1(0,0,-1);
 	Point p_1_10(-1,-1,0);
 	{
@@ -84,6 +89,27 @@ int main(int argc, char** argv)
 		Polygon pl0(o, p100, p010);
 		auto res = pl0.suppression(l0);
 		assert(!res.first.first);
+	}
+	{
+		BzCurve c0(p003, p022, p021, p010);
+		Polygon pl0(o, p100, p010);
+		auto res = pl0.suppression(c0);
+		assert(res.first);
+		assert(res.second == p010);
+	}
+	{
+		BzCurve c0(p003, p002, p001, p00_1);
+		Polygon pl0(o, p002, p010);
+		auto res = pl0.suppression(c0);
+		assert(res.first);
+		assert(res.second == p002);
+	}
+	{
+		BzCurve c0(o, p010, p011, p001);
+		Polygon pl0(p003, p100, p011);
+		auto res = pl0.suppression(c0);
+		assert(res.first);
+		assert(res.second == p011);
 	}
 #endif
 #if 0

@@ -3,6 +3,7 @@
 
 #include "point.h"
 #include "vector.h"
+#include "bz_curve.h"
 #include "metrics.h"
 #include "line.h"
 
@@ -21,6 +22,7 @@ public:
 	Polygon& operator=(Polygon&&) = default;
 
 	std::pair<std::pair<bool, Point>, std::pair<bool, Line>> suppression(const Line&) const;
+	std::pair<bool, Point> suppression(const BzCurve&) const;
 
 	Vector get_norm() const;
 
@@ -28,6 +30,8 @@ public:
 
 	constexpr static const std::size_t size = 3;
 protected:
+	bool in(const Point&) const;
+
 	void calc_norm();
 	// A*x+B*y+C*z
 	double Ax_By_Cz(Point) const;

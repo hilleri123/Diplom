@@ -30,25 +30,92 @@ std::pair<std::pair<bool, Point>, std::pair<bool, Line>> Polygon::suppression(co
 		assert(t <= 1 && t >= 0);
 		Point p = line(t);
 		assert(Ax_By_Cz(p) == _D);
-		int mem = 0;
-		bool ok = true;
-		for (std::size_t i = 0; i < _points.size(); i++) {
-			const Point& a = _points[i];
-			const Point& b = _points[(i+1)%_points.size()];
-			Vector v0(a, b);
-			Vector v1(a, p);
-			int curr = (_ABC^(v0*v1)) > 0 ? 1 : -1;
-			if (mem == 0)
-				mem = curr;
-			else {
-				ok &= mem == curr;
-				mem = curr;
-			}
-		}
-		res.first.first = ok;
-		if (ok)
+		res.first.first = in(p);
+		if (res.first.first)
 			res.first.second = p;
 	}
+	return res;
+}
+
+std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const 
+{
+	std::pair<bool, Point> res;
+	res.first = false;
+
+	double a = 0, b = 0, c = 0, d = 0;
+#define CALC_AXIS_A(axis) \
+	a += _ABC.axis() * (-curve.at(0).axis() + 3*curve.at(1).axis() - 3*curve.at(2).axis() + curve.at(3).axis());
+	CALC_AXIS_A(x)
+	CALC_AXIS_A(y)
+	CALC_AXIS_A(z)
+#undef CALC_AXIS_A
+#define CALC_AXIS_B(axis) \
+	b += 3*_ABC.axis() * (curve.at(0).axis() - 2*curve.at(1).axis() + curve.at(2).axis());
+	CALC_AXIS_B(x)
+	CALC_AXIS_B(y)
+	CALC_AXIS_B(z)
+#undef CALC_AXIS_B
+#define CALC_AXIS_C(axis) \
+	c += 3*_ABC.axis() * (-curve.at(0).axis() + curve.at(1).axis());
+	CALC_AXIS_C(x)
+	CALC_AXIS_C(y)
+	CALC_AXIS_C(z)
+#undef CALC_AXIS_C
+#define CALC_AXIS_D(axis) \
+	d += _ABC.axis() * curve.at(0).axis();
+	CALC_AXIS_D(x)
+	CALC_AXIS_D(y)
+	CALC_AXIS_D(z)
+#undef CALC_AXIS_D
+	d += _D;
+	
+	std::vector<double> ts;
+	if (equal(a, 0)) {
+		//std::cout << "a == 0" << std::endl;
+		if (equal(b,0)) {
+			//std::cout << "b == 0" << std::endl;
+			if (equal(c,0)) {
+				//std::cout << "c == 0" << std::endl;
+				return res;
+			} else { // c t + d = 0
+				ts.emplace_back(-d/c);
+			}
+
+		} else { //b t2 + c t + d = 0
+			double D = std::pow(c, 2) - 4.*b*d;
+			ts.emplace_back((-c+std::sqrt(D))/2./b);
+			ts.emplace_back((-c-std::sqrt(D))/2./b);
+		}
+	} else { //a t3 + b t2 + c t + d = 0
+		double p = (3*a*c-std::pow(b, 2)) / 3. / std::pow(a, 2);
+		double q = (2*std::pow(b, 3)-9.*a*b*c+27.*std::pow(a, 2)*d) / std::pow(3.*a, 3);
+		double Q = std::pow(p/3., 3) + std::pow(q/2., 2);
+		double alpha = std::pow(-q/2.+std::sqrt(Q), 1./3.);
+		double beta = std::pow(-q/2.-std::sqrt(Q), 1./3.);
+	
+		if (equal(Q, 0)) {
+			//std::cout << "norm Q == 0" << std::endl; //!!!!!!!!
+		} else if (more(Q, 0)) {
+			//std::cout << "bad Q > 0" << std::endl; //!!!!!!!!
+		} else {
+			//std::cout << "good Q < 0" << std::endl; //!!!!!!!!
+		}
+		double g_0 = alpha + beta;
+		ts.emplace_back(g_0 - b / 3. / a);
+	}
+	//Вернется последнее подходящее
+	for (double t : ts) {
+		if (t < 0 || t > 1) {
+			Point point = curve(t);
+
+			bool point_in = in(point);
+			if (point_in) {
+				res.first = point_in;
+				res.second = point;
+			}
+		}
+	}
+	
 	return res;
 }
 
@@ -56,6 +123,35 @@ Vector Polygon::get_norm() const
 {
 	Vector res(_ABC);
 	return res.normolize();
+}
+
+bool Polygon::in(const Point& p) const
+{
+	if (!equal(Ax_By_Cz(p), _D))
+		return false;
+	int mem = 0;
+	bool ok = true;
+	for (std::size_t i = 0; i < _points.size(); i++) {
+		const Point& a = _points[i];
+		const Point& b = _points[(i+1)%_points.size()];
+		Vector v0(a, b);
+		Vector v1(a, p);
+		// v0 || v1 ???
+		double angle = v0^v1;
+		if (angle == 0 && equal_or_less(Vector::norm(v1), Vector::norm(v0))) {
+			return true;
+		} else if (angle == 4*atan(1)) {
+			return false;
+		}
+		int curr = (_ABC^(v0*v1)) > 0 ? 1 : -1;
+		if (mem == 0)
+			mem = curr;
+		else {
+			ok &= mem == curr;
+			mem = curr;
+		}
+	}
+	return ok;
 }
 
 void Polygon::calc_norm()
