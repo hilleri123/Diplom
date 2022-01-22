@@ -21,5 +21,17 @@
 
 
 //std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file, double R = earth::radius());
-std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file);
+class TrajectoryLoader
+{
+public:
+	using trajectory_vec = std::vector<std::pair<Point, Velocity>>;
 
+	explicit TrajectoryLoader() {}
+	const trajectory_vec& trajectory() const { return _trj;}
+
+	const trajectory_vec& csv_parser_read(std::string file);
+	//std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file);
+protected:
+	trajectory_vec _trj;
+
+};

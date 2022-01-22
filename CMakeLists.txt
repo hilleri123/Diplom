@@ -79,6 +79,7 @@ set (HEADERS
 	${h_dir}/polygon.h
 	${h_dir}/base_mesh.h
 	${h_dir}/mesh.h
+	${h_dir}/height_table.h
 	)
 
 set (TEST_SOURCES
@@ -105,7 +106,9 @@ set (SOURCES
 	${s_dir}/xy_circle.cpp
 	${s_dir}/sphere.cpp
 	${s_dir}/polygon.cpp
-	${s_dir}/mesh.cpp
+	${s_dir}/vertex_mesh.cpp
+	${s_dir}/face_mesh.cpp
+	${s_dir}/height_table.cpp
 	${HEADERS}
 	#${TEST_SOURCES}
 	#program/main.cpp)

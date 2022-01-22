@@ -27,22 +27,25 @@ int main(int argc, char** argv)
 	VertexMesh mesh;
 	double dlat = 0.10;
 	double dlon = 0.10;
-	int count = 2;
-	double poslat = 0.4;
-	double poslon = 0.4;
+	int count = 200;
+	double poslat = atan(1)*2;
+	double poslon = 0.0;
+	double endlat = poslat+0.01+dlat;
+	double endlon = poslon+0.01+atan(1)*8+dlon;
+	Point o(0, 0, earth::radius());
 	for (double lat = 0; lat < atan(1)*8; lat += dlat) {
 		for (double lon = 0; lon < atan(1)*8; lon += dlon) {
 			if (count <= 0)
 				break;
-			if (lat > poslat && lon > poslon) {
+			if (lat >= poslat && lon >= poslon && lat <= endlat && lon <= endlon) {
 				Point p0 = earth::geo(0, lat,      lon);
 				Point p1 = earth::geo(0, lat+dlat, lon);
 				Point p2 = earth::geo(0, lat,      lon+dlon);
 				Point p3 = earth::geo(0, lat+dlat, lon+dlon);
-				Polygon pl0(p0, p1, p2);
-				Polygon pl1(p2, p3, p1);
+				Polygon pl0(p0, p2, o);
+				//Polygon pl1(p2, p3, p1);
 				mesh.add_polygon(pl0);
-				mesh.add_polygon(pl1);
+				//mesh.add_polygon(pl1);
 				count--;
 			}
 		}

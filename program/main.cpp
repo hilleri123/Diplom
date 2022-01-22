@@ -12,6 +12,7 @@
 #include "sphere.h"
 #include "log.h"
 #include "mesh.h"
+#include "height_table.h"
 
 #include "roket_ode.h"
 
@@ -20,23 +21,35 @@
 #include <boost/program_options.hpp>
 
 
+static void add_to_mesh(BaseMesh* mesh, HeightTable& t, std::array<double, 4>&& lat_lon)
+{
+	double& lat  = lat_lon[0];
+	double& dlat = lat_lon[1];
+	double& lon  = lat_lon[2];
+	double& dlon = lat_lon[3];
+	Point p0 = earth::geo(t.height_at(lat     , lon     ), lat,      lon);
+	Point p1 = earth::geo(t.height_at(lat+dlat, lon     ), lat+dlat, lon);
+	Point p2 = earth::geo(t.height_at(lat     , lon+dlon), lat,      lon+dlon);
+	Point p3 = earth::geo(t.height_at(lat+dlat, lon+dlon), lat+dlat, lon+dlon);
+	Polygon pl0(p0, p1, p2);
+	Polygon pl1(p2, p3, p1);
+	mesh->add_polygon(pl0);
+	mesh->add_polygon(pl1);
+}
+
+
 int main(int argc, char** argv)	
 {	
 #if 1
 	std::cout << "Hi" << std::endl;
-	VertexMesh mesh;
+	FaceMesh mesh;
+	HeightTable table("tables/table.txt");
+	const double pi = atan(1)*4;
 	double dlat = 0.10;
 	double dlon = 0.10;
-	for (double lat = 0; lat < atan(1)*8; lat += dlat) {
-		for (double lon = 0; lon < atan(1)*8; lon += dlon) {
-			Point p0 = earth::geo(0, lat,      lon);
-			Point p1 = earth::geo(0, lat+dlat, lon);
-			Point p2 = earth::geo(0, lat,      lon+dlon);
-			Point p3 = earth::geo(0, lat+dlat, lon+dlon);
-			Polygon pl0(p0, p1, p2);
-			Polygon pl1(p2, p3, p1);
-			mesh.add_polygon(pl0);
-			mesh.add_polygon(pl1);
+	for (double lat = -pi/2; lat < pi/2.; lat += lat+dlat >= pi/2. ? pi/2.-lat : dlat) {
+		for (double lon = 0; lon < 2*pi; lon += lon+dlon >= 2*pi ? 2*pi-lon : dlon) {
+			add_to_mesh(&mesh, table, {lat, dlat, lon, dlon});
 		}
 	}
 	std::ofstream file(STL_MESH_FILE);
@@ -89,7 +102,7 @@ int main(int argc, char** argv)
 
 
 
-#if 0
+#if 1
 	namespace po = boost::program_options;
 
 	double h = 1;
@@ -123,7 +136,15 @@ int main(int argc, char** argv)
 
 	if (vmap.count("output"))
 		out = vmap["output"].as<std::string>();
+	std::cout << "h = " << h << std::endl;
+	std::cout << "in = " << in << std::endl;
+	std::cout << "out = " << out << std::endl;
+	std::cout << std::endl;
 
+	if (in.empty()) {
+		std::cout << "There's no input" << std::endl;
+		return 0;
+	}
 
 #if 0
 	if (argc < 2) {
@@ -149,9 +170,12 @@ int main(int argc, char** argv)
 #endif
 
 	//auto& data = csv_parser_read(in, earth::radius());
-	auto& data = csv_parser_read(in);
+	TrajectoryLoader loader;
+	auto& data = loader.csv_parser_read(in);
 	Function a(data);
 	
+	std::cout << h << std::endl;
+	std::cout << a.max_time() << std::endl;
 	std::ofstream stream;
 #if 0
 	std::ofstream plot;
@@ -177,8 +201,6 @@ int main(int argc, char** argv)
 	}
 	my_log::log_it(my_log::level::info, __FUNCTION_NAME__, "Height "+std::to_string(h));
 	my_log::log_it(my_log::level::info, __FUNCTION_NAME__, "Time "+std::to_string(a.max_time()));
-	//std::cout << h << std::endl;
-	//std::cout << a.max_time() << std::endl;
 
 
 	const Conversion flatting = earth::flatting_conv();
@@ -198,9 +220,11 @@ int main(int argc, char** argv)
 		if (stream.is_open()) {
 			//stream << time << " " << a(time).x() << " " << a(time).y() << " " << a(time).z() << std::endl;
 			//stream << a(time).x() << " " << a(time).y() << " " << a(time).z() << std::endl;
-			//stream << time << " " << point.radius() << " " << point.latitude() << " " << point.longitude() << " " << velocity << std::endl;
+			stream << time << " " << point.radius() << " " << point.latitude() << " " << point.longitude() << " " << velocity << std::endl;
+#if 0
 			stream << time << " H(" << r << ") lat(" << lat << ") lon(" << lon << ") v(" << velocity.v() << ", " << (velocity.max_rotate() * h)
 			       	<< ") c(" << velocity.course() << ")" << std::endl;
+#endif
 			//stream << time << " " << a(time).radius() << " " << a(time).latitude() << " " << a(time).longitude() << std::endl;
 		} else {
 			//std::cout << time << " " << a(time).x() << " " << a(time).y() << " " << a(time).z() << std::endl;
@@ -213,7 +237,6 @@ int main(int argc, char** argv)
 	if (stream.is_open()) {
 		stream.close();
 	}
-	delete &data;
 #endif
 	return 0;
 };

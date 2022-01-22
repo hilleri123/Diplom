@@ -3,7 +3,8 @@
 
 
 //std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file, double R)
-std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file)
+//const std::vector<std::pair<Point, Velocity>>& TrajectoryLoader::csv_parser_read(std::string file)
+const TrajectoryLoader::trajectory_vec& TrajectoryLoader::csv_parser_read(std::string file)
 {
 	
 	std::ifstream stream;
@@ -14,8 +15,8 @@ std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file)
 		//std::cout << "not open" << std::endl;
 		throw std::ifstream::failure("not open");
 	}
-	auto& result = *new std::vector<std::pair<Point, Velocity>>();
 	std::string buf;
+	_trj.clear();
 	
 	double angle = asin(1./2.);
 
@@ -90,13 +91,13 @@ std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file)
 				//auto pair = std::make_pair(tmp.by_geo(r, latitude, longitude), *v);
 				auto pair = std::make_pair(tmp, v);
 				//std::cout << std::get<0>(pair) << std::endl;
-				result.push_back(pair);
+				_trj.push_back(pair);
 				//delete v;
 			} else {
 				// bad data
 				//std::cerr << "velocity cannt exist" << std::endl;
 				my_log::log_it(my_log::level::error, __FUNCTION_NAME__, "velocity cannt exist");
-				delete &result;
+				delete &_trj;
 				throw ;			//!!!
 			}
 
@@ -104,7 +105,7 @@ std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file)
 			// bad data
 			//std::cerr << "bad data" << std::endl;
 			my_log::log_it(my_log::level::error, __FUNCTION_NAME__, "bad data");
-			delete &result;
+			delete &_trj;
 			throw ;			//!!!
 		}
 
@@ -115,12 +116,12 @@ std::vector<std::pair<Point, Velocity>>& csv_parser_read(std::string file)
 #if 1
 	//std::cout << "_________________________" << std::endl;
 	my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, "_________________________");
-	for (auto i = result.begin(); i < result.end(); i++) {
+	for (auto i = _trj.begin(); i < _trj.end(); i++) {
 		//std::cout << std::get<0>(*i) << std::endl;
 		my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, std::get<0>(*i).to_string());
 	}
 	my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, "_________________________");
 	//std::cout << "_________________________" << std::endl;
 #endif
-	return result;
+	return _trj;
 }

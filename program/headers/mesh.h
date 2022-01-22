@@ -25,3 +25,20 @@ protected:
 	VertexList _vertex_list;
 };
 
+class FaceMesh : public BaseMesh
+{
+	using Vertex = std::pair<Point, std::set<std::size_t>>;
+	using VertexList = std::vector<Vertex>;
+	using Face = std::array<std::size_t, Polygon::size>;
+	using FaceList = std::vector<Face>;
+public:
+	FaceMesh();
+	virtual ~FaceMesh() override;
+
+	virtual bool add_polygon(const Polygon& ) override;
+	virtual bool dump_to_stl(std::ostream& ) const override;
+protected:
+	VertexList _vertex_list;
+	FaceList _face_list;
+};
+
