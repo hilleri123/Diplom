@@ -43,10 +43,16 @@ int main(int argc, char** argv)
 #if 1
 	std::cout << "Hi" << std::endl;
 	FaceMesh mesh;
-	HeightTable table("tables/table.txt");
 	const double pi = atan(1)*4;
+#if 0
+	HeightTable table("tables/new_new_api_table.csv");
+	double dlat = 0.04;
+	double dlon = 0.04;
+#else
+	HeightTable table("tables/new_new_api_table.csv");
 	double dlat = 0.10;
 	double dlon = 0.10;
+#endif
 	for (double lat = -pi/2; lat < pi/2.; lat += lat+dlat >= pi/2. ? pi/2.-lat : dlat) {
 		for (double lon = 0; lon < 2*pi; lon += lon+dlon >= 2*pi ? 2*pi-lon : dlon) {
 			add_to_mesh(&mesh, table, {lat, dlat, lon, dlon});
@@ -56,6 +62,7 @@ int main(int argc, char** argv)
 	mesh.dump_to_stl(file);
 	file.close();
 	std::cout << "Bye" << std::endl;
+
 #endif
 #if 0
 	Point p0(0,0,0);
@@ -219,8 +226,8 @@ int main(int argc, char** argv)
 
 		if (stream.is_open()) {
 			//stream << time << " " << a(time).x() << " " << a(time).y() << " " << a(time).z() << std::endl;
-			//stream << a(time).x() << " " << a(time).y() << " " << a(time).z() << std::endl;
-			stream << time << " " << point.radius() << " " << point.latitude() << " " << point.longitude() << " " << velocity << std::endl;
+			stream << point.x() << " " << point.y() << " " << point.z() << std::endl;
+			//stream << time << " " << point.radius() << " " << point.latitude() << " " << point.longitude() << " " << velocity << std::endl;
 #if 0
 			stream << time << " H(" << r << ") lat(" << lat << ") lon(" << lon << ") v(" << velocity.v() << ", " << (velocity.max_rotate() * h)
 			       	<< ") c(" << velocity.course() << ")" << std::endl;

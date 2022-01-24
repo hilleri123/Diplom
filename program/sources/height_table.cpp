@@ -13,10 +13,13 @@ HeightTable::HeightTable(std::string file_name)
 	std::string buf;
 	std::streampos pos = 0;
 	_lines.push_back(pos);
-	while (std::getline(_file, buf) ) {
+	std::cout << "pos" << std::endl;
+	while (std::getline(_file, buf)) {
 		pos = _file.tellg();
 		_lines.push_back(pos);
 	}
+	_lines.pop_back();
+	_file.clear();
 }
 
 
@@ -28,15 +31,16 @@ HeightTable::~HeightTable()
 
 double HeightTable::height_at(double lat, double lon) 
 {
+	_file.clear();
 	if (!_file.is_open()) {
 		my_log::log_it(my_log::level::error, __FUNCTION_NAME__, "height table is't opened");
 		return 0;
 	}
 	std::string buf;
 	for (auto pos : _lines) {
-		_file.seekg(pos);
+		_file.seekg(pos, _file.beg);
 		if (!std::getline(_file, buf)) {
-			std::string err_str = "failed read line from " + std::to_string(pos) + " pos"; 
+			std::string err_str = "failed read line from " + std::to_string(pos) + " pos buf("+buf+")"; 
 			my_log::log_it(my_log::level::error, __FUNCTION_NAME__, err_str);
 			return 0;
 		}
@@ -53,6 +57,10 @@ double HeightTable::height_at(double lat, double lon)
 				begin = end + 1;
 			}
 		}
+		if (begin != end) {
+			std::string tmp(begin, end);
+			parts.emplace_back(tmp);
+		}
 		assert(parts.size() == 3);
 		double glat, glon, gh;
 
@@ -63,9 +71,11 @@ double HeightTable::height_at(double lat, double lon)
 			err_str += "cant read latitude from pos (" + std::to_string(pos) + ") ";
 		if (1 < parts.size())
 			glon = std::stod(parts[1]);
+		else
 			err_str += "cant read longitude from pos (" + std::to_string(pos) + ") ";
 		if (2 < parts.size())
 			gh = std::stod(parts[2])/1000;
+		else
 			err_str += "cant read height from pos (" + std::to_string(pos) + ") ";
 		if (err_str.size() > 0)
 			my_log::log_it(my_log::level::error, __FUNCTION_NAME__, err_str);

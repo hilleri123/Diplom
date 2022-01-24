@@ -8,12 +8,12 @@ namespace sphere {
 	//double b = 100;
 	//double f = (a - b) / a;
 	//double a = 6378.388;
-	double a = 6378.137*1000;
+	double a = 6378.137;
 	//double f = 1./297.;
 	double f = 1./298.257223263;
 	double b = a - f * a;
 
-	double error = 0.01;
+	double error = 0.0001;
 
 	double split_distance = 10.;
 
