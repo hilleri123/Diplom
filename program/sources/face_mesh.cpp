@@ -56,3 +56,16 @@ bool FaceMesh::dump_to_stl(std::ostream& s) const
 	return true;
 }
 
+std::size_t FaceMesh::size() const
+{
+	return _face_list.size();
+}
+
+Polygon FaceMesh::polygon_at(std::size_t idx) const
+{
+	auto& point_ids_arr = _face_list[idx];
+	const Point& p0 = _vertex_list[point_ids_arr[0]].first;
+	const Point& p1 = _vertex_list[point_ids_arr[1]].first;
+	const Point& p2 = _vertex_list[point_ids_arr[2]].first;
+	return Polygon(p0, p1, p2);
+}

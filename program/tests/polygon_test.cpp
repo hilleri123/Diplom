@@ -55,6 +55,7 @@ int main(int argc, char** argv)
 	Point p022(0,2,2);
 	Point p021(0,2,1);
 	Point p00_1(0,0,-1);
+	Point p_110(-1,1,0);
 	Point p_1_10(-1,-1,0);
 	{
 		Line l0(p001, p00_1);
@@ -69,6 +70,13 @@ int main(int argc, char** argv)
 		auto res = pl0.suppression(l0);
 		assert(res.first.first);
 		assert(res.first.second == 0);
+	}
+	{
+		Line l0(p001, p00_1);
+		Polygon pl0(p_110, p_1_10, p100);
+		auto res = pl0.suppression(l0);
+		assert(res.first.first);
+		assert(res.first.second == o);
 	}
 	{
 		Line l0(p001, p00_1);

@@ -13,12 +13,13 @@ HeightTable::HeightTable(std::string file_name)
 	std::string buf;
 	std::streampos pos = 0;
 	_lines.push_back(pos);
-	std::cout << "pos" << std::endl;
+	//std::cout << "push_back" << std::endl;
 	while (std::getline(_file, buf)) {
 		pos = _file.tellg();
 		_lines.push_back(pos);
 	}
 	_lines.pop_back();
+	//std::cout << "pop_back" << std::endl;
 	_file.clear();
 }
 
@@ -39,6 +40,7 @@ double HeightTable::height_at(double lat, double lon)
 	std::string buf;
 	for (auto pos : _lines) {
 		_file.seekg(pos, _file.beg);
+		//std::cout << "pos " << pos << std::endl;
 		if (!std::getline(_file, buf)) {
 			std::string err_str = "failed read line from " + std::to_string(pos) + " pos buf("+buf+")"; 
 			my_log::log_it(my_log::level::error, __FUNCTION_NAME__, err_str);
@@ -83,5 +85,8 @@ double HeightTable::height_at(double lat, double lon)
 			return gh;
 		}
 	}
+	my_log::log_it(my_log::level::warning, __FUNCTION_NAME__, "cant find data for lat("+std::to_string(lat)+
+			") lon("+std::to_string(lon)+")");
+	return 0;
 }
 

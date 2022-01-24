@@ -361,3 +361,19 @@ Velocity PartOfFunction::stats() const
 PartOfFunction::~PartOfFunction()
 {}
 
+std::vector<Point> PartOfFunction::check(const Polygon& p) const
+{
+	//std::cout << "+PartOfFunction check " << max_time() << std::endl;
+	std::vector<Point> result = _start.check(p);
+	std::vector<Point> tmp = _climb.check(p);
+	result.insert( result.end(), tmp.begin(), tmp.end() );
+	tmp = check_curves(p, _curves);
+	result.insert( result.end(), tmp.begin(), tmp.end() );
+	tmp = _finish.check(p);
+	result.insert( result.end(), tmp.begin(), tmp.end() );
+	//std::cout << "-PartOfFunction check" << std::endl;
+
+	my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, "found suppression "+std::to_string(result.size()));
+	return result;
+}
+

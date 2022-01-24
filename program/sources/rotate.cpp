@@ -273,3 +273,12 @@ Point Rotate::end_point() const
 Rotate::~Rotate()
 {}
 
+std::vector<Point> Rotate::check(const Polygon& p) const
+{
+	//std::cout << "rotate check " << max_time() << std::endl;
+	std::vector<Point> result = check_curves(p, _curves);
+	my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, "found suppression "+std::to_string(result.size()));
+	return result;
+	//return check_curves(p, _curves);
+}
+

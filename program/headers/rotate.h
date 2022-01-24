@@ -12,6 +12,7 @@
 //#include "velocity.h"
 //#include "../init.h"
 #include "point.h"
+#include "polygon.h"
 #include "vector.h"
 #include "trans_matrix.h"
 #include "velocity.h"
@@ -22,7 +23,7 @@
 #include "sphere.h"
 
 
-class Rotate : base_init
+class Rotate : public base_init, public CheckSuppression
 {
 public:
 	//explicit Rotate(Point first = Point(), Point second = Point(), Velocity v = Velocity(), Vector direction = Vector(Point(0,0,0), Point(1,0,0)), Point* center = nullptr);
@@ -44,6 +45,8 @@ public:
 	virtual Vector direction() const;
 
 	virtual std::pair<Point, Point> line() const;
+
+	virtual std::vector<Point> check(const Polygon&) const override;
 
 	virtual ~Rotate() override;
 protected:

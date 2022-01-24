@@ -50,12 +50,25 @@ int main(int argc, char** argv)
 	double dlon = 0.04;
 #else
 	HeightTable table("tables/new_new_api_table.csv");
+	//HeightTable table("kaka.csv");
 	double dlat = 0.10;
 	double dlon = 0.10;
 #endif
+#define PART
+#ifdef PART
+	double min_lat = 0.5292036732051038 - 0.12;
+	double min_lon = 0.65; 
+	double max_lat = 0.5292036732051038 + 0.12;
+	double max_lon = 2;
+#endif
 	for (double lat = -pi/2; lat < pi/2.; lat += lat+dlat >= pi/2. ? pi/2.-lat : dlat) {
 		for (double lon = 0; lon < 2*pi; lon += lon+dlon >= 2*pi ? 2*pi-lon : dlon) {
-			add_to_mesh(&mesh, table, {lat, dlat, lon, dlon});
+			//std::cout << "add" << std::endl;
+#ifdef PART
+			if (min_lat <= lat && lat <= max_lat && min_lon <= lon && lon <= max_lon)
+#endif
+				add_to_mesh(&mesh, table, {lat, dlat, lon, dlon});
+			//std::cout << "added" << std::endl;
 		}
 	}
 	std::ofstream file(STL_MESH_FILE);
@@ -210,7 +223,7 @@ int main(int argc, char** argv)
 	my_log::log_it(my_log::level::info, __FUNCTION_NAME__, "Time "+std::to_string(a.max_time()));
 
 
-	const Conversion flatting = earth::flatting_conv();
+	//const Conversion flatting = earth::flatting_conv();
 
 	for (double time = 0; time < a.max_time()+h; time+=h) {
 		auto pair = a(time);
@@ -244,6 +257,41 @@ int main(int argc, char** argv)
 	if (stream.is_open()) {
 		stream.close();
 	}
+
+#if 1
+	std::vector<Point> points = a.check(mesh);
+	std::cout << "suppression start" << std::endl;
+	for (auto point : points) {
+		//std::cout << p << std::endl;
+		std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
+	}
+	std::cout << "suppression end" << std::endl;
+#endif
+
+#define EXTRA_SUPP
+#ifdef EXTRA_SUPP
+	std::cout << "ex suppression start" << std::endl;
+	for (double time = 0; time < a.max_time(); time+=h) {
+		Point point0 = a(time).first;
+		Point point1 = a(time+h).first;
+		Line l(point0, point1);
+		for (std::size_t idx = 0; idx < mesh.size(); idx++) {
+			Polygon p = mesh.polygon_at(idx);
+			auto res = p.suppression(l);
+			if (res.first.first) {
+				Point point = res.first.second;
+				std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
+			}
+		}
+	}
+
+		//Point tmp;
+	for (auto point : points) {
+		//std::cout << p << std::endl;
+		std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
+	}
+	std::cout << "ex suppression end" << std::endl;
+#endif
 #endif
 	return 0;
 };

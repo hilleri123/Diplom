@@ -37,6 +37,9 @@ public:
 
 	virtual bool add_polygon(const Polygon& ) override;
 	virtual bool dump_to_stl(std::ostream& ) const override;
+
+	std::size_t size() const;
+	Polygon polygon_at(std::size_t idx) const;
 protected:
 	VertexList _vertex_list;
 	FaceList _face_list;

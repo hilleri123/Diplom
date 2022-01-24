@@ -15,6 +15,7 @@
 #include "point.h"
 #include "velocity.h"
 #include "log.h"
+#include "mesh.h"
 
 
 
@@ -47,6 +48,8 @@ public:
 	std::size_t find_interval(double) const;
 
 	double max_time() const;
+
+	std::vector<Point> check(const FaceMesh&) const;
 
 	~Function();
 

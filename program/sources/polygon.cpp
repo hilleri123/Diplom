@@ -183,3 +183,15 @@ double Polygon::Ax_By_Cz(Point p) const
 	return _ABC.x()*p.x() + _ABC.y()*p.y() + _ABC.z()*p.z();
 }
 
+
+std::vector<Point> CheckSuppression::check_curves(const Polygon& p, const std::vector<BzCurve>& curves) const
+{
+	std::vector<Point> result;
+	for (auto i = curves.begin(); i < curves.end(); ++i) {
+		std::pair<bool, Point> res = p.suppression(*i);
+		if (res.first)
+			result.push_back(res.second);
+	}
+	return result;
+}
+

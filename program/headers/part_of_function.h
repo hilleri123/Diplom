@@ -10,6 +10,7 @@
 //#include "../init.h"
 //#include "rotate.h"
 #include "point.h"
+#include "polygon.h"
 #include "vector.h"
 #include "init.h"
 #include "velocity.h"
@@ -19,7 +20,7 @@
 #include "sphere.h"
 #include "log.h"
 
-class PartOfFunction : base_init
+class PartOfFunction : public base_init, public CheckSuppression
 {
 public:
 	explicit PartOfFunction(const Point& first = *std::unique_ptr<Point>(new Point), const Point& second = *std::unique_ptr<Point>(new Point),
@@ -40,6 +41,8 @@ public:
 	virtual Vector direction() const;
 
 	virtual Velocity stats() const;
+
+	virtual std::vector<Point> check(const Polygon&) const override;
 
 	virtual ~PartOfFunction() override;
 

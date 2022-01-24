@@ -94,4 +94,3 @@ bool VertexMesh::dump_to_stl(std::ostream& s) const
 	s << "endsolid mesh" << std::endl;
 	return true;
 }
-

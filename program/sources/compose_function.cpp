@@ -125,3 +125,20 @@ double Function::max_time() const
 Function::~Function()
 {}
 
+
+
+std::vector<Point> Function::check(const FaceMesh& mesh) const
+{
+	//std::cout << "+function check" << std::endl;
+	std::vector<Point> result;
+	for (auto i = _function.begin(); i < _function.end(); ++i) {
+		for (std::size_t idx = 0; idx < mesh.size(); idx++) {
+			Polygon p = mesh.polygon_at(idx);
+			std::vector<Point> tmp = i->first.check(p);
+			result.insert( result.end(), tmp.begin(), tmp.end() );
+		}
+	}
+	my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, "found suppression "+std::to_string(result.size()));
+	//std::cout << "-function check" << std::endl;
+	return result;
+}

@@ -43,3 +43,12 @@ protected:
 };
 
 
+class CheckSuppression
+{
+public:
+	virtual std::vector<Point> check(const Polygon&) const = 0;
+protected:
+	std::vector<Point> check_curves(const Polygon&, const std::vector<BzCurve>& ) const;
+};
+
+
