@@ -10,3 +10,9 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 *.swp
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+pip-log.txt
+pip-delete-this-directory.txt
