@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
 import nasa_api
+import password
 
 
 def main():
-    token = nasa_api.Token('hilleri123', 'W2gYqs$nxF62c-r')
+    token = nasa_api.Token(password.login, password.password)
     print(token.t())
 
 
