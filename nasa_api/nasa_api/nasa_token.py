@@ -5,7 +5,8 @@ import functools
 
 
 class Token:
-
+    #__url = 'https://lpdaacsvc.cr.usgs.gov/appeears/api/login'
+    __url = "https://appeears.earthdatacloud.nasa.gov/api/login"
     def __init__(self, login, password):
         self.login = login
         self.password = password
@@ -27,7 +28,7 @@ class Token:
     async def __get_new_token(self):
         loop = asyncio.get_event_loop()
         #resp = requests.post('https://lpdaacsvc.cr.usgs.gov/appeears/api/login', auth=(self.login, self.password))
-        future = loop.run_in_executor(None, functools.partial(requests.post, 'https://lpdaacsvc.cr.usgs.gov/appeears/api/login', auth=(self.login, self.password)))
+        future = loop.run_in_executor(None, functools.partial(requests.post, self.__url, auth=(self.login, self.password)))
         resp = await future
         json_resp = resp.json()
         msg = 'message'

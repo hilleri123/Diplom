@@ -5,8 +5,8 @@ import password
 
 
 def main():
-    #token = nasa_api.Token(password.login, password.password)
-    #print(token.t())
+    token = nasa_api.Token(password.login, password.password)
+    print(token.t())
     #r = 0.1
     #s = nasa_api.Sphere(r, r, 5000)
     #for i in s:
