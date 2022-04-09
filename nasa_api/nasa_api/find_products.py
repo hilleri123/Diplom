@@ -4,6 +4,7 @@ import requests
 import asyncio
 import functools
 from clint.textui import progress
+import json
 
 
 class Products:
@@ -11,7 +12,7 @@ class Products:
     #__url = 'https://lpdaacsvc.cr.usgs.gov/appeears/api/product'
     __url = "https://appeears.earthdatacloud.nasa.gov/api/product"
     __json_tokens = {'Description':'Elevation', 'Available':True}
-    def __init__(self, limit=10, max_offset = 1000000):
+    def __init__(self, limit=10, max_offset = 10000):
         if self.__singleton:
             #self.instance()
             return
@@ -41,15 +42,15 @@ class Products:
             resp = await future
             #resp = requests.get(self.__url, params = params)
             if resp.status_code == 200:
-                json = resp.json()
-                for prd in json:
+                json_data = resp.json()
+                for prd in json_data:
                     if all([prd[key] == val for key, val in self.__json_tokens.items()]):
                         tmp.append(prd)
         for item in tmp:
             product_id = item['ProductAndVersion']
             resp = requests.get(self.__url + f'/{product_id}')
-            json = resp.json()
-            self.products[product_id] = json
+            json_data = resp.json()
+            self.products[product_id] = json_data
 
     
     @classmethod

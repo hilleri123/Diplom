@@ -33,10 +33,14 @@ class Sphere:
             lat = self.lat_end
         else:
             lat += self.dlat * lat_idx
+        if lat > self.lat_end:
+            lat = self.lat_end
         if lon_idx == self.lon_l:
             lon = self.lon_end
         else:
             lon += self.dlon * lon_idx
+        if lon > self.lon_end:
+            lon = self.lon_end
         return np.array([idx, lat, lon])
 
             
