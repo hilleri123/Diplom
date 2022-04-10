@@ -16,7 +16,7 @@ def main():
     r = 0.1
     size = 1000
     s = nasa_api.Sphere(r, r, size)
-    p = nasa_api.Products.instance().products
+    p = nasa_api.Products.instance(100000).products
     #print(p)
     prod_id = next(iter(p))
     layer_id = next(iter(p[prod_id]))

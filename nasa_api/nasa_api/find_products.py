@@ -54,8 +54,8 @@ class Products:
 
     
     @classmethod
-    def instance(cls):
+    def instance(cls, size=10000):
         if not cls.__singleton:
-            cls.__singleton = Products()
+            cls.__singleton = Products(max_offset=size)
         return cls.__singleton
 
