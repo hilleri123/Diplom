@@ -6,8 +6,8 @@ static std::array<Point, 4>&& make_Bz(std::array<Point, 4>&& arr)
 	std::array<Vector, 4> v;
 	for (int i = 0; i < 4; i++) 
 		v[i] = Vector(arr[i]);
-	arr[1] = (18*v[1]+(-9*v[2])+(-5*v[0])+2*v[3]) * (1. / 6) + Point(0,0,0);
-	arr[2] = (18*v[2]+(-9*v[1])+(-5*v[3])+2*v[0]) * (1. / 6) + Point(0,0,0);
+	arr[1] = (18.*v[1]+(-9.*v[2])+(-5.*v[0])+2.*v[3]) * (1. / 6.) + Point(0,0,0);
+	arr[2] = (18.*v[2]+(-9.*v[1])+(-5.*v[3])+2.*v[0]) * (1. / 6.) + Point(0,0,0);
 	return std::move(arr);
 }
 

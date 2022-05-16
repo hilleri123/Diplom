@@ -7,13 +7,13 @@ import password
 def name_gen():
     count = 0
     while True:
-        yield f"kaka{count}"
+        yield f"r002_{count}"
         count += 1
 
 def main():
     token = nasa_api.Token(password.login, password.password)
     #print(token.t())
-    r = 0.1
+    r = 0.02
     size = 1000
     s = nasa_api.Sphere(r, r, size)
     p = nasa_api.Products.instance(100000).products

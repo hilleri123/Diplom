@@ -4,9 +4,9 @@
 
 
 Point::Point(double x, double y, double z)
-	//: _arr[0](x), _arr[1](y), _arr[2](z)
+	: _arr({x,y,z})
 {
-	_arr = {x, y, z};
+	//_arr = {x, y, z};
 }
 
 Point& Point::by_geo(double r, double latitude, double longitude)

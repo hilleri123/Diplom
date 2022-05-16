@@ -87,37 +87,6 @@ int main(int argc, char** argv)
 	Polygon pl0(p0, p1, p2);
 	auto res = plo.suppression();
 #endif
-#if 0
-	Stage s0(250, 4000000, 171000,170000);
-	Stage s1(270, 800000, 101000,100000);
-	Stage s2(320, 290000, 9500+25000,25000);
-	Stage s012(250, 4000000, 171000+101000+9500+25000,170000);
-	Stage s12(270, 800000, 101000+9500+25000,100000);
-	Roket r0(std::vector<Stage>({s0, s1, s2}));
-	Roket r(std::vector<Stage>({s0, s1, s2}));
-	//Roket r(std::vector<Stage>({s0, s12}));
-	//Roket r(std::vector<Stage>({s012}));
-#define TT_max 710.
-#define P_t 340.
-	RoketArgs args(r, earth::geo(0,0,0), 0.,
-		       	[](double t){if (P_t > TT_max) { if (t >= TT_max) return -atan(1)*4; else return 0.;
-			} else if (t < P_t) return 0.;
-			else if (t < TT_max) { if ((t-P_t)*0.08 > atan(1)*2) return atan(1)*2; else return (t*P_t)*0.08;
-			} else if ((t-P_t)*0.08 - (t-TT_max)*0.1 > -atan(1)*4) return -atan(1)*4; else return (t-P_t)*0.08 - (t-TT_max)*0.1; },
-		       	[](double){return 0.1;});
-	ArgsContainer<RoketArgs, double> c(args,0);
-	std::cout << "Runge" << std::endl;
-	//RungeKutta4<double, RoketArgs, double> __a( &roket_ode, c);
-	RungeKutta4<double, RoketArgs, double> __a( [](RoketArgs args, double v) {return roket_ode(args, v);}, c);
-	double step = 10;
-	__a.set_step(step);
-	for (int i = 0; i < r0.T_max() * 2. / step; i++) {
-		std::cout << __a.current() << std::endl;
-		__a.step();
-		//std::cout << (step * i) << ", " << __a.step() << std::endl;
-	}
-	std::cout << s0.T_max() << " " << s1.T_max() << " " << s2.T_max() << " " << r.T_max() << std::endl;
-#endif
 
 
 

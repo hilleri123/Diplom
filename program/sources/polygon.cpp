@@ -1,13 +1,17 @@
 #include "polygon.h"
 #include <cmath>
 #include <cassert>
+#include <complex>
 #include <utility>
+#include <string>
 
 Polygon::Polygon(Point a, Point b, Point c)
 	: _points({a, b, c})
 {
 	calc_norm();
-	_D = -Ax_By_Cz(a);
+	_D = -Ax_By_Cz(a) / Vector::norm(_ABC);
+	_ABC.normolize();
+	//std::cout << _ABC << _D << std::endl;
 }
 
 std::pair<std::pair<bool, Point>, std::pair<bool, Line>> Polygon::suppression(const Line& line) const 
@@ -68,6 +72,21 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 	CALC_AXIS_D(z)
 #undef CALC_AXIS_D
 	d += _D;
+
+
+#define D_PRINT_F(a, ...) \
+	D_PRINT_A(a) << D_PRINT_E(__VA_ARGS__)
+#define D_PRINT_E(a, ...) \
+	D_PRINT_A(a) << D_PRINT_D(__VA_ARGS__)
+#define D_PRINT_D(a, ...) \
+	D_PRINT_A(a) << D_PRINT_C(__VA_ARGS__)
+#define D_PRINT_C(a, ...) \
+	D_PRINT_A(a) << D_PRINT_B(__VA_ARGS__)
+#define D_PRINT_B(a, ...) \
+	D_PRINT_A(a) << D_PRINT_A(__VA_ARGS__)
+#define D_PRINT_A(a) \
+	(#a+std::string(" = ")) << a << " "
+	
 	
 	std::vector<double> ts;
 	if (equal(a, 0)) {
@@ -87,31 +106,72 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 			ts.emplace_back((-c-std::sqrt(D))/2./b);
 		}
 	} else { //a t3 + b t2 + c t + d = 0
-		double p = (3*a*c-std::pow(b, 2)) / 3. / std::pow(a, 2);
-		double q = (2*std::pow(b, 3)-9.*a*b*c+27.*std::pow(a, 2)*d) / std::pow(3.*a, 3);
+		//std::cout << D_PRINT_D(a, b, c, d) << std::endl;
+		double p = (3.*a*c-std::pow(b, 2)) / 3. / std::pow(a, 2);
+		double q = (2.*std::pow(b, 3)-9.*a*b*c+27.*std::pow(a, 2)*d) / std::pow(3.*a, 3);
 		double Q = std::pow(p/3., 3) + std::pow(q/2., 2);
-		double alpha = std::pow(-q/2.+std::sqrt(Q), 1./3.);
-		double beta = std::pow(-q/2.-std::sqrt(Q), 1./3.);
+		std::complex<double> alpha = std::pow(-q/2.+std::pow(std::complex<double>(Q),0.5), 1./3.);
+		std::complex<double> beta = std::pow(-q/2.-std::pow(std::complex<double>(Q),0.5), 1./3.);
+		//std::cout << D_PRINT_E(p, q, Q, alpha, beta) << std::endl;
 	
+		std::vector<std::complex<double>> gs;
+		std::complex<double> i(0,1);
+		std::complex<double> g_0 = alpha + beta;
+		std::complex<double> g_1 = - (alpha + beta) / 2. + i * (alpha - beta) / 2. * std::sqrt(3);
+		std::complex<double> g_2 = - (alpha + beta) / 2. - i * (alpha - beta) / 2. * std::sqrt(3);
+		//std::cout << "g0 = " << g_0 << " g1 = " << g_1 << " g2 = " << g_2 << std::endl;
+		//std::cout << D_PRINT_C(g_0, g_1, g_2) << std::endl;
+#if 0
 		if (equal(Q, 0)) {
+			gs.push_back(g_0.real());
+			gs.push_back(g_1.real());
 			//std::cout << "norm Q == 0" << std::endl; //!!!!!!!!
 		} else if (more(Q, 0)) {
+			gs.push_back(g_0.real());
 			//std::cout << "bad Q > 0" << std::endl; //!!!!!!!!
 		} else {
+			gs.push_back(g_0.real());
+			gs.push_back(g_1.real());
+			gs.push_back(g_2.real());
 			//std::cout << "good Q < 0" << std::endl; //!!!!!!!!
 		}
-		double g_0 = alpha + beta;
-		ts.emplace_back(g_0 - b / 3. / a);
+#endif
+		gs.push_back(g_0);
+		gs.push_back(g_1);
+		gs.push_back(g_2);
+		//for (const double& g : gs)
+		for (const std::complex<double>& g : gs)
+			if (equal(g.imag(), 0))
+				ts.emplace_back(g.real() - b / 3. / a);
 	}
 	//Вернется последнее подходящее
 	for (double t : ts) {
-		if (t < 0 || t > 1) {
+		assert(equal(Ax_By_Cz(curve(t)), _D));
+		//if (t < 0 || t > 1) {
+		//std::cout << t << std::endl;
+		if (t >= 0 || t <= curve.get_len()) {
 			Point point = curve(t);
 
 			bool point_in = in(point);
+			double x = point.x();
+			double y = point.y();
+			double z = point.z();
+			//std::cout << D_PRINT_F(t, x, y, z, Ax_By_Cz(point), _D) << std::endl;
+#define CHECK(xx,yy,zz) \
+	if (xx-100 < x && x < xx+100 && yy-100 < y && y < yy+100 && zz-100 < z && z < zz+100) \
+		std::cout << "!!!!!!!!!!!!!!!!!!" << std::endl;
+			CHECK(5738.68, -2871, 582.413)
+			CHECK(5863.65, -2665.83, 385.971)
+			CHECK(7981.79, -1405.43, 2092.79)
+			CHECK(7530.15, -1774.39, 1956.49)
+
+			//if (point.radius() < 10000)
+				//std::cout << D_PRINT_F(t, x, y, z, Ax_By_Cz(point), _D) << std::endl;
+
 			if (point_in) {
 				res.first = point_in;
 				res.second = point;
+				std::cout << "!" << point << std::endl;
 			}
 		}
 	}
