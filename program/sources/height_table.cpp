@@ -64,15 +64,20 @@ double HeightTable::height_at(double lat, double lon)
 			parts.emplace_back(tmp);
 		}
 		assert(parts.size() == 3);
-		double glat, glon, gh;
+
+		//double cof = 1;
+
+		double cof = atan(1)/45.;
+		// -10000 - такого значения точно не будет
+		double glat = -10000, glon = -10000, gh = -10000;
 
 		std::string err_str;
 		if (0 < parts.size())
-			glat = std::stod(parts[0]);
+			glat = std::stod(parts[0]) * cof;
 		else
 			err_str += "cant read latitude from pos (" + std::to_string(pos) + ") ";
 		if (1 < parts.size())
-			glon = std::stod(parts[1]);
+			glon = std::stod(parts[1]) * cof;
 		else
 			err_str += "cant read longitude from pos (" + std::to_string(pos) + ") ";
 		if (2 < parts.size())

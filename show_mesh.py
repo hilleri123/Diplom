@@ -55,6 +55,7 @@ def show_stl(figure):
         collection = mplot3d.art3d.Poly3DCollection(vec, facecolor = colors)
         collection.set_alpha(0.7)
 
+
         file_name = './results/result.txt'
         print(f'checking {file_name}')
         N = 10000
@@ -73,17 +74,18 @@ def show_stl(figure):
             ys[i] = ys[idx]
             zs[i] = zs[idx]
 
-        ax.add_collection3d(collection)
 
+        ax.add_collection3d(collection)
         scale = np.append(np.append(np.append(np.append(maxs, np.zeros(3)), xs), ys), zs).flatten('F')
         #scale = np.append(maxs, mins).flatten('F')
-        #ax.scatter(xs,ys,zs, marker='o', s=1, c="r", alpha=1)
+        ax.scatter(xs,ys,zs, marker='o', s=1, c="r", alpha=1)
         ax.plot(xs,ys,zs, c="black")
 
         ax.auto_scale_xyz(scale, scale, scale)
 
         #sup_points = np.array([[2000,2750,420],[3400,2300,850],])
         sup_points = []
+        
         for p in zip(xs, ys, zs):
             if 410 < p[2] < 430 and len(sup_points) < 2:
                 sup_points.append(p)
@@ -95,7 +97,7 @@ def show_stl(figure):
         #colors = [chose_color(face) for idx, face in enumerate(your_mesh.vectors)]
         #ax.add_collection3d(mplot3d.art3d.Poly3DCollection(vec, facecolor = colors))
 
-        if False:
+        if True:
             elev = 0
             for ii in range(0,360,10):
                 ax.view_init(elev=elev, azim=ii)

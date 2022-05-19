@@ -49,12 +49,13 @@ int main(int argc, char** argv)
 	double dlat = 0.04;
 	double dlon = 0.04;
 #else
-	HeightTable table("tables/new_new_api_table.csv");
+	//HeightTable table("tables/new_new_api_table.csv");
+	HeightTable table("tables/table.csv");
 	//HeightTable table("kaka.csv");
-	double dlat = 0.10;
-	double dlon = 0.10;
+	double dlat = 0.02;
+	double dlon = 0.02;
 #endif
-#define PART
+//#define PART
 #ifdef PART
 	double min_lat = 0.5292036732051038 - 0.12;
 	double min_lon = 0.65; 

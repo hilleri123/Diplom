@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <cassert>
+#include <cmath>
 #include "log.h"
 #include "metrics.h"
 
