@@ -48,14 +48,16 @@ def show_stl(figure):
             if (s < l).all():
                 return 'tab:blue'
             if (s >= h).all():
-                print('brown')
                 return 'tab:brown'
-            print('green')
             return 'tab:green'
 
         colors = [chose_color(face) for idx, face in enumerate(your_mesh.vectors)]
         collection = mplot3d.art3d.Poly3DCollection(vec, facecolor = colors)
-        collection.set_alpha(0.7)
+        #collection.set_alpha(0.7)
+        ax.add_collection3d(collection)
+        scale = np.append(maxs, np.zeros(3)).flatten('F')
+        ax.auto_scale_xyz(scale, scale, scale)
+        return
 
 
         file_name = './results/result.txt'
@@ -77,7 +79,6 @@ def show_stl(figure):
             zs[i] = zs[idx]
 
 
-        ax.add_collection3d(collection)
         scale = np.append(np.append(np.append(np.append(maxs, np.zeros(3)), xs), ys), zs).flatten('F')
         #scale = np.append(maxs, mins).flatten('F')
         ax.scatter(xs,ys,zs, marker='o', s=1, c="r", alpha=1)
