@@ -26,13 +26,13 @@ def show_stl(figure):
         mins = np.min(np.min(your_mesh.vectors, axis=0), axis=0)
         vec = your_mesh.vectors - mins
         maxs = np.max(np.max(vec, axis=0), axis=0)
-        L = 0.1
+        L = 0.01
         def chose_color(face):
             a = 6378.137
             f = 1./298.257223263;
             b = a - f * a;
             l = L
-            h = 2
+            h = 1
             s = np.zeros(3)
             for idx, p in enumerate(face):
                 for i in p:
@@ -48,7 +48,9 @@ def show_stl(figure):
             if (s < l).all():
                 return 'tab:blue'
             if (s >= h).all():
+                print('brown')
                 return 'tab:brown'
+            print('green')
             return 'tab:green'
 
         colors = [chose_color(face) for idx, face in enumerate(your_mesh.vectors)]

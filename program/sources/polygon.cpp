@@ -160,10 +160,10 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 #define CHECK(xx,yy,zz) \
 	if (xx-100 < x && x < xx+100 && yy-100 < y && y < yy+100 && zz-100 < z && z < zz+100) \
 		std::cout << "!!!!!!!!!!!!!!!!!!" << std::endl;
-			CHECK(5738.68, -2871, 582.413)
-			CHECK(5863.65, -2665.83, 385.971)
-			CHECK(7981.79, -1405.43, 2092.79)
-			CHECK(7530.15, -1774.39, 1956.49)
+			//CHECK(5738.68, -2871, 582.413)
+			//CHECK(5863.65, -2665.83, 385.971)
+			//CHECK(7981.79, -1405.43, 2092.79)
+			//CHECK(7530.15, -1774.39, 1956.49)
 
 			//if (point.radius() < 10000)
 				//std::cout << D_PRINT_F(t, x, y, z, Ax_By_Cz(point), _D) << std::endl;

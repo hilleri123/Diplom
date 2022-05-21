@@ -35,7 +35,9 @@ option (PRINT_USE_GEO "print geo points" ON)
 
 if (Boost_FOUND)
 	option (USE_BOOST_LOG "use boost log" ON)
+	option (USE_BOOST_HASH "use boost hash" ON)
 	message ("boost log ${USE_BOOST_LOG}")
+	message ("boost hash ${USE_BOOST_HASH}")
 
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpthread -lboost_system")
 	add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
@@ -144,6 +146,11 @@ set (SHARED_NAME _uir_shared)
 add_library ( ${STATIC_NAME} STATIC ${SOURCES})
 
 if (USE_BOOST_LOG)
+	#target_link_libraries(${SHARED_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
+	target_link_libraries(${STATIC_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
+endif()
+
+if (USE_BOOST_HASH)
 	#target_link_libraries(${SHARED_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 	target_link_libraries(${STATIC_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 endif()

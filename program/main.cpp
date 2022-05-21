@@ -62,8 +62,8 @@ int main(int argc, char** argv)
 	double max_lat = 0.5292036732051038 + 0.12;
 	double max_lon = 2;
 #endif
-	for (double lat = -pi/2; lat < pi/2.; lat += lat+dlat >= pi/2. ? pi/2.-lat : dlat) {
-		for (double lon = 0; lon < 2*pi; lon += lon+dlon >= 2*pi ? 2*pi-lon : dlon) {
+	for (double lat = -pi/2.; lat < pi/2.; lat += lat+dlat >= pi/2. ? pi/2.-lat : dlat) {
+		for (double lon = 0.; lon < 2.*pi; lon += lon+dlon >= 2.*pi ? 2.*pi-lon : dlon) {
 			//std::cout << "add" << std::endl;
 #ifdef PART
 			if (min_lat <= lat && lat <= max_lat && min_lon <= lon && lon <= max_lon)
