@@ -45,7 +45,20 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 {
 	std::pair<bool, Point> res;
 	res.first = false;
+	const int steps_count = 4;
+	double step_len = curve.get_len() / steps_count;
+	for (double step = 0; step < steps_count; step++) {
+		Point point0 = curve(step*step_len);
+		Point point1 = curve((step+1)*step_len);
+		Line l(point0, point1);
+		res = suppression(l).first;
+		if (res.first) {
+			return res;
+		}
+	}
+	return res;
 
+#if 0
 	double a = 0, b = 0, c = 0, d = 0;
 #define CALC_AXIS_A(axis) \
 	a += _ABC.axis() * (-curve.at(0).axis() + 3*curve.at(1).axis() - 3*curve.at(2).axis() + curve.at(3).axis());
@@ -177,6 +190,7 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 	}
 	
 	return res;
+#endif
 }
 
 Vector Polygon::get_norm() const

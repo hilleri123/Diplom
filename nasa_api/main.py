@@ -7,7 +7,7 @@ import password
 def name_gen():
     count = 0
     while True:
-        yield f"r002_{count}"
+        yield f"r003_{count}"
         count += 1
 
 def main():
@@ -16,7 +16,7 @@ def main():
     r = 0.02
     size = 1000
     s = nasa_api.Sphere(r, r, size)
-    p = nasa_api.Products.instance(100000).products
+    p = nasa_api.Products.instance(1000).products
     #print(p)
     prod_id = next(iter(p))
     layer_id = next(iter(p[prod_id]))
