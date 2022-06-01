@@ -77,3 +77,17 @@ std::ostream& operator<<(std::ostream& stream, BzCurve&& curve) {
 	return stream;
 }
 
+BzCurve BzCurve::make_bz_curve_manualy(std::array<Point, 4> arr)
+{
+	BzCurve r;
+	r._p = arr;
+	return r;
+}
+
+BzCurve BzCurve::make_bz_curve_manualy(Point p0, Point p1, Point p2, Point p3)
+{
+	BzCurve r;
+	r._p = {p0,p1,p2,p3};
+	return r;
+}
+

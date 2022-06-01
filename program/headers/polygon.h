@@ -13,6 +13,9 @@
 class Polygon
 {
 public:
+	constexpr static const std::size_t size = 3;
+
+	explicit Polygon(std::array<Point, size>&&);
 	Polygon(Point, Point, Point);
 	//Polygon(Point, Vector);
 
@@ -28,7 +31,6 @@ public:
 
 	Point get_point(std::size_t) const;
 
-	constexpr static const std::size_t size = 3;
 protected:
 	bool in(const Point&) const;
 
@@ -36,7 +38,7 @@ protected:
 	// A*x+B*y+C*z
 	double Ax_By_Cz(Point) const;
 
-	std::array<Point, 3> _points;
+	std::array<Point, size> _points;
 	Vector _ABC;
 	double _D;
 

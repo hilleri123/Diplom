@@ -14,6 +14,8 @@
 #include "metrics.h"
 #include "log.h"
 
+class Polygon;
+class BzCurve;
 class Conversion;
 
 class Matrix : public base_init
@@ -45,8 +47,9 @@ public:
 	friend Matrix operator*(const Matrix&, const Matrix&);
 
 	Point operator()(Point) const;
-
 	Vector operator()(Vector) const;
+	BzCurve operator()(BzCurve) const;
+	Polygon operator()(Polygon) const;
 
 	friend std::ostream& operator<<(std::ostream& stream, const Matrix& m);
 	friend std::ostream& operator<<(std::ostream& stream, Matrix&& m);

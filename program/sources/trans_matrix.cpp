@@ -1,5 +1,7 @@
 
 #include "trans_matrix.h"
+#include "bz_curve.h"
+#include "polygon.h"
 
 
 
@@ -137,35 +139,39 @@ Matrix operator*(const Matrix& m1, const Matrix& m2)
 Point Matrix::operator()(Point point) const
 {
 	std::valarray<double> vec = {point.x(), point.y(), point.z(), 1.};
-	//double s = (_matrix[ std::slice(3*4, 4, 1) ] * vec).sum(); 
-	//if (equal(s, 1))
-		//throw ;
-
 	double x = (_matrix[ std::slice(0, 4, 1) ] * vec).sum(); 
 	double y = (_matrix[ std::slice(4, 4, 1) ] * vec).sum(); 
 	double z = (_matrix[ std::slice(2*4, 4, 1) ] * vec).sum(); 
-	return Point(x, y, z);
+	return std::move(Point(x, y, z));
 }
 
 Vector Matrix::operator()(Vector vector) const
 {
-	//std::valarray<double> vec = {vector.x(), vector.y(), vector.z(), 1.};
-	//double s = (_matrix[ std::slice(3*4, 4, 1) ] * vec).sum(); 
-	//if (equal(s, 1))
-		//throw ;
-
-	//double x = (_matrix[ std::slice(0, 4, 1) ] * vec).sum(); 
-	//double y = (_matrix[ std::slice(4, 4, 1) ] * vec).sum(); 
-	//double z = (_matrix[ std::slice(2*4, 4, 1) ] * vec).sum(); 
-	//return Vector(Point(0,0,0), Point(x, y, z));
 
 	Point begin = this->operator()(Point(0,0,0));
 	Point end = this->operator()(Point(vector.x(), vector.y(), vector.z()));
 
-	return Vector(begin, end);
+	return std::move(Vector(begin, end));
 }
 
+BzCurve Matrix::operator()(BzCurve curve) const
+{
 
+	std::array<Point, 4> tmp;
+	for (std::size_t i = 0; i < 4; ++i)
+		tmp[i] = this->operator()(curve.at(i));
+	return std::move(BzCurve::make_bz_curve_manualy(tmp));
+}
+
+Polygon Matrix::operator()(Polygon polygon) const
+{
+	std::array<Point, Polygon::size> tmp;
+
+	for (std::size_t i = 0; i < Polygon::size; ++i)
+		tmp[i] = this->operator()(polygon.get_point(i));
+
+	return std::move(Polygon(std::move(tmp)));
+}
 
 
 std::size_t Matrix::size() const { return 4; }

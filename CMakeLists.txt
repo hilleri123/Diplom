@@ -82,6 +82,7 @@ set (HEADERS
 	${h_dir}/base_mesh.h
 	${h_dir}/mesh.h
 	${h_dir}/height_table.h
+	${h_dir}/plane.h
 	)
 
 set (TEST_SOURCES
@@ -111,6 +112,7 @@ set (SOURCES
 	${s_dir}/vertex_mesh.cpp
 	${s_dir}/face_mesh.cpp
 	${s_dir}/height_table.cpp
+	${s_dir}/plane.cpp
 	${HEADERS}
 	#${TEST_SOURCES}
 	#program/main.cpp)

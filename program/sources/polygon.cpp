@@ -5,6 +5,15 @@
 #include <utility>
 #include <string>
 
+Polygon::Polygon(std::array<Point, size>&& arr)
+	: _points(std::move(arr))
+{
+	calc_norm();
+	_D = -Ax_By_Cz(arr[0]) / Vector::norm(_ABC);
+	_ABC.normolize();
+}
+
+
 Polygon::Polygon(Point a, Point b, Point c)
 	: _points({a, b, c})
 {

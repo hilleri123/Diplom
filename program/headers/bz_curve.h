@@ -45,6 +45,9 @@ public:
 	friend std::ostream& operator<<(std::ostream& stream, const BzCurve& curve);
 	friend std::ostream& operator<<(std::ostream& stream, BzCurve&& curve);
 
+	static BzCurve make_bz_curve_manualy(std::array<Point, 4> arr);
+	static BzCurve make_bz_curve_manualy(Point p0, Point p1, Point p2, Point p3);
+
 	virtual ~BzCurve() {}
 protected:
 	std::array<Point, 4> _p;
