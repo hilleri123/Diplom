@@ -3,7 +3,7 @@
 
 namespace error
 {
-	double distance = 0.000005;
+	double distance = 0.0005;
 }
 
 namespace comparison

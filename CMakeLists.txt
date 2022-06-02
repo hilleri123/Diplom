@@ -30,8 +30,8 @@ set (conf_dir "${CMAKE_CURRENT_LIST_DIR}/program/config")
 
 find_package(Boost 1.40 COMPONENTS log)
 
-option (PRINT_USE_GEO "print geo points" ON)
-
+option (PRINT_USE_GEO "print geo points" OFF)
+option (PLANE_EARTH "use plane earth model" ON)
 
 if (Boost_FOUND)
 	option (USE_BOOST_LOG "use boost log" ON)
@@ -48,6 +48,7 @@ file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/log")
 set (LOG_DIR "${CMAKE_CURRENT_BINARY_DIR}/log")
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/meshes")
 set (STL_MESH_FILE "${CMAKE_CURRENT_BINARY_DIR}/meshes/mesh.stl")
+set (APPROXIMATE_NUM 3)
 
 configure_file(${conf_dir}/config.h.in ${conf_dir}/config.h)
 
@@ -83,10 +84,12 @@ set (HEADERS
 	${h_dir}/mesh.h
 	${h_dir}/height_table.h
 	${h_dir}/plane.h
+	${h_dir}/geometry2d.h
 	)
 
 set (TEST_SOURCES
 	${test_dir}/polygon_test.cpp
+	${test_dir}/geometry2d_test.cpp
 	)
 
 
@@ -113,6 +116,7 @@ set (SOURCES
 	${s_dir}/face_mesh.cpp
 	${s_dir}/height_table.cpp
 	${s_dir}/plane.cpp
+	${s_dir}/geometry2d.cpp
 	${HEADERS}
 	#${TEST_SOURCES}
 	#program/main.cpp)

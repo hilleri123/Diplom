@@ -14,9 +14,9 @@ def main():
     token = nasa_api.Token(password.login, password.password)
     #print(token.t())
     r = 0.02
-    size = 1000
+    size = 10000
     s = nasa_api.Sphere(r, r, size)
-    p = nasa_api.Products.instance(1000).products
+    p = nasa_api.Products.instance(10000).products
     #print(p)
     prod_id = next(iter(p))
     layer_id = next(iter(p[prod_id]))

@@ -2,9 +2,12 @@
 #pragma once
 
 #cmakedefine USE_BOOST_LOG
+#cmakedefine USE_BOOST_HASH
+#cmakedefine APPROXIMATE_NUM @APPROXIMATE_NUM@
 #cmakedefine LOG_DIR "@LOG_DIR@"
 #cmakedefine STL_MESH_FILE "@STL_MESH_FILE@"
 #cmakedefine PRINT_USE_GEO
+#cmakedefine PLANE_EARTH
 
 
 

@@ -21,7 +21,7 @@ class HashForTable
 public:
 	std::size_t operator()( const std::pair<double, double>& pair ) const;
 protected:
-	uint _round_d = 10000000000;
+	uint _round_d = 100000;
 };
 class CompareForTable
 {

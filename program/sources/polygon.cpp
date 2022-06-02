@@ -1,4 +1,7 @@
 #include "polygon.h"
+
+#include "config.h"
+
 #include <cmath>
 #include <cassert>
 #include <complex>
@@ -54,7 +57,7 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 {
 	std::pair<bool, Point> res;
 	res.first = false;
-	const int steps_count = 4;
+	const int steps_count = APPROXIMATE_NUM;
 	double step_len = curve.get_len() / steps_count;
 	for (double step = 0; step < steps_count; step++) {
 		Point point0 = curve(step*step_len);

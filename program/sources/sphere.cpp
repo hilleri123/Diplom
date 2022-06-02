@@ -26,11 +26,16 @@ namespace sphere {
 
 
 double earth::radius() {
+#ifdef PLANE_EARTH
+	return 0;
+#endif
 	return sphere::a;
-	//return sphere::R_earth;
 }
 
 Conversion earth::flatting_conv() {
+#ifdef PLANE_EARTH
+	return Conversion();
+#endif
 	Vector flatting(Point(1,1,sphere::b / sphere::a));
 	Matrix to, from;
 	Matrix::multiplay_foreward_backward(to, from, Matrix::comp, &flatting);
@@ -38,6 +43,9 @@ Conversion earth::flatting_conv() {
 }
 
 Vector earth::norm(double lat, double lon) {
+#ifdef PLANE_EARTH
+	return Vector(Point(0,0,1));
+#endif
 	Point p;
 	//p.by_geo(earth::local_R(lat, lon), lat, lon);
 	p.by_geo(earth::radius(), lat, lon);
@@ -60,10 +68,16 @@ Vector earth::norm(Point p) {
 }
 
 double earth::H(Point p) {
+#ifdef PLANE_EARTH
+	return p.z();
+#endif
 	return p.radius() - earth::local_R(p);
 }
 
 Point earth::geo(double h, double lat, double lon) {
+#ifdef PLANE_EARTH
+	return Point(sphere::a*lat, sphere::a*lon, h*100);
+#endif
 	Point p;
 	p.by_geo(earth::local_R(lat, lon)+h, lat, lon);
 	return p;
@@ -71,6 +85,9 @@ Point earth::geo(double h, double lat, double lon) {
 
 
 double earth::local_R(double lat, double lon) {
+#ifdef PLANE_EARTH
+	return 0;
+#endif
 	Point p;
 	p.by_geo(earth::radius(), lat, lon);
 	const Conversion flatting = earth::flatting_conv();
@@ -81,11 +98,23 @@ double earth::local_R(Point p) {
 	return local_R(p.latitude(), p.longitude());
 }
 
+Vector earth_south()
+{
+	Point O(0,0,0);
+#ifdef PLANE_EARTH
+	return Vector(O, Point(0,1,0));
+#else
+	return Vector(O, Point(0,0,earth::radius()));
+#endif
+}
+
+
 double earth::course(Point p, Vector v) {
 #if 1
 	Point O(0,0,0);
 		
-	Vector south(O, Point(0,0,earth::radius()));
+	Vector south = earth_south();
+
 	//Vector new_z(second, O);
 	Vector new_z = earth::norm(p);
 	Vector new_y = new_z * south;
@@ -144,7 +173,7 @@ Vector earth::course_to_vec(Point p, double c) {
 	if (abs(c) > atan(1)*8)
 		c *= -1;
 		
-	Vector south(O, Point(0,0,earth::radius()));
+	Vector south = earth_south();
 	//Vector new_z(second, O);
 	Vector new_z = earth::norm(p);
 	Vector new_y = new_z * south;
@@ -470,7 +499,11 @@ std::vector<BzCurve> orthodoxy(const Point& first_point, const Point& second, Ve
 		result.emplace_back(tmp);
 
 		
+#ifdef PLANE_EARTH
+		result.back().set_len(curr_len);
+#else
 		result.back().set_len(curr_len * first.radius() / earth::radius());
+#endif
 		//result.back().set_len(curr_len);
 		//result.back().set_len(tmp_s * (N - 1));
 
