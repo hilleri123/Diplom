@@ -3,8 +3,13 @@
 #include "metrics.h"
 #include "point.h"
 
-
+#include <vector>
 #include <utility>
+#include <initializer_list>
+#include <type_traits>
+#include <iterator>
+
+
 
 struct Point2D
 {
@@ -26,6 +31,7 @@ struct LineSegment2D
 
 	Line2DIntersection suppression(LineSegment2D line) const;
 	bool in(const Point2D& p) const;
+	bool left(const Point2D& p) const;
 	
 	const double& k() const { return _k; }
 	const double& b() const { return _b; }
@@ -36,4 +42,23 @@ protected:
 	bool _err = false;
 };
 
+
+struct DirectedPolygon2D
+{
+	DirectedPolygon2D(std::initializer_list<Point2D>&& list);
+
+	template<typename ITER, 
+         std::enable_if_t<std::is_base_of_v<typename std::iterator_traits<ITER>::iterator_category, 
+                                            std::random_access_iterator_tag>, bool> = true>
+	DirectedPolygon2D(ITER begin, ITER end) : points(begin, end)
+	{}
+
+	std::pair<Point2D, Point2D> touches(const Point2D& sight) const;
+
+	std::vector<Point2D> points;
+
+};
+
+
+std::pair<Point2D, Point2D> make_new(const DirectedPolygon2D& pol, const Point& sight);
 

@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.7)
 
 project (plane_and_earth_interception VERSION 0.20 LANGUAGES CXX)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
 
 if (UNIX)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Wextra")

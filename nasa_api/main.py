@@ -3,7 +3,6 @@
 import nasa_api
 import password
 
-
 def name_gen():
     count = 0
     while True:
@@ -13,15 +12,14 @@ def name_gen():
 def main():
     token = nasa_api.Token(password.login, password.password)
     #print(token.t())
-    r = 0.02
-    size = 10000
+    r = 0.005
+    size = 1000
     s = nasa_api.Sphere(r, r, size)
-    p = nasa_api.Products.instance(10000).products
-    #print(p)
-    prod_id = next(iter(p))
-    layer_id = next(iter(p[prod_id]))
-    #prod_id = "MOD11A1.061"
-    #layer_id = "LST_Day_1km"
+    #p = nasa_api.Products.instance(10000).products
+    #prod_id = next(iter(p))
+    #layer_id = next(iter(p[prod_id]))
+    prod_id = 'ASTGTM_NC.003'
+    layer_id = 'ASTER_GDEM_DEM'
     print(prod_id, layer_id)
     task = nasa_api.Task({"id":prod_id, "layer":layer_id}, token, name_gen())
     for i in s:
