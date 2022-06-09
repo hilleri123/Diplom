@@ -69,3 +69,9 @@ Polygon FaceMesh::polygon_at(std::size_t idx) const
 	const Point& p2 = _vertex_list[point_ids_arr[2]].first;
 	return Polygon(p0, p1, p2);
 }
+
+std::vector<Polygon> FaceMesh::around(const Polygon& ) const
+{
+	return std::vector<Polygon>();
+}
+

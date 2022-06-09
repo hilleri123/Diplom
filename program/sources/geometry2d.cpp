@@ -21,6 +21,11 @@ bool operator!=(Point2D p0, Point2D p1)
 	return !(p0==p1);
 }
 
+double Point2D::length(const Point2D& p) const
+{
+	return sqrt(std::pow(p.x-x,2)+std::pow(p.y-y,2));
+}
+
 LineSegment2D::LineSegment2D(Point p3d0, Point p3d1) 
 	: p0(p3d0.x() < p3d1.x() ? p3d0 : p3d1), 
 	p1(p3d0.x() < p3d1.x() ? p3d1 : p3d0)
@@ -114,7 +119,7 @@ std::pair<Point2D, Point2D> DirectedPolygon2D::touches(const Point2D& sight) con
 	return res;
 }
 
-std::pair<Point2D, Point2D> make_new(const DirectedPolygon2D& pol, const Point& sight)
+std::pair<Point2D, Point2D> make_new(const DirectedPolygon2D& pol, const Point2D& sight)
 {
 	const std::size_t pair_size = 2;
 	const double d = 1;
@@ -150,4 +155,35 @@ std::pair<Point2D, Point2D> make_new(const DirectedPolygon2D& pol, const Point& 
 	return std::make_pair(res[0], res[1]);
 }
 
+
+Point2D add_point(const DirectedPolygon2D& pol, const Point2D& begin, const Point2D& end)
+{
+	std::vector<std::pair<Point2D, double>> res;
+	auto begin_p = make_new(pol, begin);
+	auto end_p = make_new(pol, end);
+	const std::size_t pair_size = 2;
+	std::array<std::array<Point2D, pair_size>, pair_size> points = {std::array<Point2D,pair_size>({begin_p.first, end_p.second}), std::array<Point2D, pair_size>({begin_p.second, end_p.first})};
+	for (auto i = points.begin(); i != points.end(); ++i) {
+		LineSegment2D line_b(begin, (*i)[0]);
+		LineSegment2D line_e(end, (*i)[1]);
+		if (line_b.k() == line_e.k())
+			continue;
+		double x = (line_e.b() - line_b.b()) / (line_b.k() - line_e.k());
+		double y = line_b.b() + line_b.k() * x;
+		Point2D res_point(x, y);
+		double s = begin.length(res_point) + end.length(res_point);
+		res.push_back(std::make_pair(res_point, s));
+	}
+	if (res.size() == 0)
+		return Point2D();
+	double min_s = -1;
+	auto min_it = res.begin();
+	for (auto i = res.begin(); i != res.end(); ++i) {
+		if (i->second < min_s || min_s < 0) {
+			min_s = i->second;
+			min_it = i;
+		}
+	}
+	return min_it->first;
+}
 

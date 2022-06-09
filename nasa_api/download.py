@@ -9,12 +9,12 @@ import asyncio
 def name_gen():
     count = 0
     while True:
-        yield f"r003_{count}"
+        yield f"s004_{count}"
         count += 1
 
 def main():
     token = nasa_api.Token(password.login, password.password)
-    downloader = nasa_api.DownloadTasks(token, r'r003_(\d*)')
+    downloader = nasa_api.DownloadTasks(token, r's004_(\d*)')
     downloader.wait_until_complete()
 
 

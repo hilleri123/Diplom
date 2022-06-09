@@ -30,12 +30,17 @@ set (conf_dir "${CMAKE_CURRENT_LIST_DIR}/program/config")
 
 find_package(Boost 1.40 COMPONENTS log)
 
-option (PRINT_USE_GEO "print geo points" OFF)
-option (PLANE_EARTH "use plane earth model" ON)
+option (CONFIG_PRINT_USE_GEO "print geo points" OFF)
+option (CONFIG_PLANE_EARTH "use plane earth model" ON)
+
+set (PRINT_USE_GEO "${CONFIG_PRINT_USE_GEO}")
+set (PLANE_EARTH "${CONFIG_PLANE_EARTH}")
 
 if (Boost_FOUND)
-	option (USE_BOOST_LOG "use boost log" ON)
-	option (USE_BOOST_HASH "use boost hash" ON)
+	option (CONFIG_USE_BOOST_LOG "use boost log" ON)
+	option (CONFIG_USE_BOOST_HASH "use boost hash" ON)
+	set (USE_BOOST_LOG "${CONFIG_USE_BOOST_LOG}")
+	set (USE_BOOST_HASH "${CONFIG_USE_BOOST_HASH}")
 	message ("boost log ${USE_BOOST_LOG}")
 	message ("boost hash ${USE_BOOST_HASH}")
 
@@ -50,7 +55,8 @@ file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/meshes")
 set (STL_MESH_FILE "${CMAKE_CURRENT_BINARY_DIR}/meshes/mesh.stl")
 set (APPROXIMATE_NUM 3)
 
-configure_file(${conf_dir}/config.h.in ${conf_dir}/config.h)
+
+configure_file(${conf_dir}/config.h.in ${conf_dir}/config.h @ONLY) 
 
 #set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -113,6 +119,7 @@ set (SOURCES
 	${s_dir}/sphere.cpp
 	${s_dir}/polygon.cpp
 	${s_dir}/vertex_mesh.cpp
+	${s_dir}/winged_mesh.cpp
 	${s_dir}/face_mesh.cpp
 	${s_dir}/height_table.cpp
 	${s_dir}/plane.cpp

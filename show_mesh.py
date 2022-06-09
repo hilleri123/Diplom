@@ -34,6 +34,15 @@ def show_stl(figure):
             l = L
             h = 1
             s = np.zeros(3)
+            def flat():
+                for idx, p in enumerate(face):
+                    s[idx] += p[2]
+                if (s < l).all():
+                    return 'tab:blue'
+                if (s >= h).any():
+                    return 'tab:brown'
+                return 'tab:green'
+            return flat()
             for idx, p in enumerate(face):
                 for i in p:
                     s[idx] += i**2
@@ -57,7 +66,6 @@ def show_stl(figure):
         ax.add_collection3d(collection)
         scale = np.append(maxs, np.zeros(3)).flatten('F')
         ax.auto_scale_xyz(scale, scale, scale)
-        return
 
 
         file_name = './results/result.txt'

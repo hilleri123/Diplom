@@ -127,7 +127,7 @@ Function::~Function()
 
 
 
-std::vector<Point> Function::check(const FaceMesh& mesh) const
+std::vector<Point> Function::check(const WingedEdgeMesh& mesh) const
 {
 	//std::cout << "+function check" << std::endl;
 	std::vector<Point> result;

@@ -18,10 +18,10 @@ class Plane
 public:
 	explicit Plane(Point p, Vector norm, Vector ox);
 
-	void add_polygon(const Polygon& p);
+	void add_polygons(const WingedEdgeMesh& p);
 protected:
 	Point _start_point;
 	Conversion _conversion;
-	std::vector<Point2D> _projection_general_polygon;
+	std::vector<DirectedPolygon2D> _polygons;
 };
 

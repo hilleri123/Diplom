@@ -110,6 +110,9 @@ Vector earth_south()
 
 
 double earth::course(Point p, Vector v) {
+#ifdef PLANE_EARTH
+	return atan2(v.x(), v.y());
+#endif
 #if 1
 	Point O(0,0,0);
 		
@@ -167,6 +170,9 @@ double earth::course(Point p, Vector v) {
 }
 
 Vector earth::course_to_vec(Point p, double c) {
+#ifdef PLANE_EARTH
+	return Vector(Point(sin(c), cos(c), 0));
+#endif
 #if 1
 	Point O(0,0,0);
 	c = 2*atan(1) - c;
@@ -232,7 +238,12 @@ double earth::k(double h) {
 
 
 bool direct(const double& lat1, const double& z1, const double& s, double& lat2, double& L, double& z2) {
-
+#ifdef PLANE_EARTH
+	z2 = z1;
+	L = sin(z1) * s;
+	lat2 = cos(z1) * s;
+	return true;
+#endif
 	if (lat1 != lat1 || z1 != z1 || s != s) {
 		//std::cerr << "nan found lat1(" << lat1 << ") z1(" << z1 << ") s(" << s << ")" << std::endl;
 		std::string tmp_str = "nan found lat1(" + std::to_string(lat1) + ") z1(" + std::to_string(z1) + ") s(" + std::to_string(s) + ")";
@@ -322,7 +333,12 @@ bool direct(const double& lat1, const double& z1, const double& s, double& lat2,
 }
 
 bool inverse(const double& lat1, const double& lat2, const double& L, double& s, double& z1, double& z2) {
-
+#ifdef PLANE_EARTH
+	s = sqrt(std::pow(lat2-lat1, 2) + std::pow(L, 2));
+	z1 = atan2(L, lat2-lat1);
+	z2 = z1;
+	return true;
+#endif
 	if (lat1 != lat1 || lat2 != lat2 || L != L) {
 		//std::cerr << "nan found lat1(" << lat1 << ") lat2(" << lat2 << ") L(" << L << ")" << std::endl;
 		std::string tmp_str = "nan found lat1(" + std::to_string(lat1) + ") lat2(" + std::to_string(lat2) + ") L(" + std::to_string(L) + ")";
@@ -393,6 +409,16 @@ bool inverse(const double& lat1, const double& lat2, const double& L, double& s,
 std::vector<BzCurve> orthodoxy(const Point& first_point, const Point& second, Vector* direction) {
 
 	std::vector<BzCurve> result;
+#ifdef PLANE_EARTH
+
+	Vector v(first_point, second);
+	BzCurve bz(first_point, first_point+v*0.33, first_point+v*0.66, second);
+	bz.set_len(Point::norm(first_point, second));
+	result.emplace_back(std::move(bz));
+	if (direction != nullptr)
+		*direction = v;
+	return result;
+#endif 
 	//std::cout << "bz curve h1(" << (first_point.radius() - earth::local_R(first_point)) << ") h2(" << (second.radius() - earth::local_R(second)) << ")" << std::endl;
 	//my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, "first point "+first_point.to_string());
 

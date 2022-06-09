@@ -49,7 +49,7 @@ public:
 
 	double max_time() const;
 
-	std::vector<Point> check(const FaceMesh&) const;
+	std::vector<Point> check(const WingedEdgeMesh&) const;
 
 	~Function();
 

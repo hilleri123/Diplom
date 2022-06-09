@@ -18,6 +18,7 @@ struct Point2D
 
 	friend bool operator==(Point2D p0, Point2D p1);
 	friend bool operator!=(Point2D p0, Point2D p1);
+	double length(const Point2D& p) const;
 	double x, y;
 };
 
@@ -61,4 +62,6 @@ struct DirectedPolygon2D
 
 
 std::pair<Point2D, Point2D> make_new(const DirectedPolygon2D& pol, const Point& sight);
+
+Point2D add_point(const DirectedPolygon2D& pol, const Point2D& begin, const Point2D& end);
 

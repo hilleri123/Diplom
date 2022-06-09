@@ -42,7 +42,8 @@ int main(int argc, char** argv)
 {	
 #if 1
 	std::cout << "Hi" << std::endl;
-	FaceMesh mesh;
+	//FaceMesh mesh;
+	WingedEdgeMesh mesh;
 	const double pi = atan(1)*4;
 #if 0
 	HeightTable table("tables/new_new_api_table.csv");
@@ -50,12 +51,12 @@ int main(int argc, char** argv)
 	double dlon = 0.04;
 #else
 	//HeightTable table("tables/new_new_api_table.csv");
-	HeightTable table("tables/table.csv");
+	HeightTable table("tables/sector_table.csv");
 	//HeightTable table("kaka.csv");
 	double dlat = 0.02;
 	double dlon = 0.02;
 #endif
-//#define PART
+#define PART
 #ifdef PART
 	double min_lat = 0.5292036732051038 - 0.12;
 	double min_lon = 0.65; 

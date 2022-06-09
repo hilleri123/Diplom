@@ -19,6 +19,8 @@ public:
 	virtual bool add_polygon(const Polygon& ) = 0;
 	virtual bool dump_to_stl(std::ostream&) const = 0;
 
+	virtual std::vector<Polygon> around(const Polygon& ) const = 0;
+
 	virtual ~BaseMesh() {}
 
 

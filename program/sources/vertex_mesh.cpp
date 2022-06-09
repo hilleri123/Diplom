@@ -95,3 +95,8 @@ bool VertexMesh::dump_to_stl(std::ostream& s) const
 	return true;
 }
 
+std::vector<Polygon> VertexMesh::around(const Polygon& ) const
+{
+	return std::vector<Polygon>();
+}
+
