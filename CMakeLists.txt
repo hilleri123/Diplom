@@ -194,9 +194,11 @@ if (Boost_FOUND)
 
 	add_executable (${PROJECT_NAME} ${SOURCES} program/main.cpp)
 	add_executable (local_${PROJECT_NAME} ${SOURCES} program/local_main.cpp)
+	add_executable (pic_${PROJECT_NAME} ${SOURCES} program/pic_main.cpp)
 
 	target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 	target_link_libraries(local_${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
+	target_link_libraries(pic_${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 
 	foreach (test_path IN LISTS TEST_SOURCES)
 		get_filename_component(test ${test_path} NAME_WE)

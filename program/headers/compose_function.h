@@ -35,9 +35,11 @@ protected:
 
 
 
+
 class Function
 {
 public:
+	
 	explicit Function(const std::vector<std::pair<Point, Velocity>>& points);
 	
 	//Point operator()(double time) const;
@@ -49,7 +51,7 @@ public:
 
 	double max_time() const;
 
-	std::vector<Point> check(const WingedEdgeMesh&) const;
+	std::vector<Suppression> check(const WingedEdgeMesh&) const;
 
 	~Function();
 

@@ -20,7 +20,20 @@
 #include "sphere.h"
 #include "log.h"
 
-class PartOfFunction : public base_init, public CheckSuppression
+struct Suppression
+{
+	Suppression(Point s, Point b, Point e, Polygon p)
+		: sup(s), begin(b), end(e), pl(p)
+	{}
+
+	Point sup;
+	Point begin;
+	Point end;
+	Polygon pl;
+
+};
+
+class PartOfFunction : public base_init /*, public CheckSuppression*/
 {
 public:
 	explicit PartOfFunction(const Point& first = *std::unique_ptr<Point>(new Point), const Point& second = *std::unique_ptr<Point>(new Point),
@@ -42,7 +55,7 @@ public:
 
 	virtual Velocity stats() const;
 
-	virtual std::vector<Point> check(const Polygon&) const override;
+	virtual std::vector<Suppression> check(const Polygon&) const /*override*/;
 
 	virtual ~PartOfFunction() override;
 

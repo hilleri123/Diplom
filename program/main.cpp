@@ -230,9 +230,10 @@ int main(int argc, char** argv)
 	}
 
 #if 1
-	std::vector<Point> points = a.check(mesh);
+	std::vector<Suppression> points = a.check(mesh);
 	std::cout << "suppression start" << std::endl;
-	for (auto point : points) {
+	for (auto sup : points) {
+		Point point = sup.sup;
 		//std::cout << p << std::endl;
 		std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
 	}
@@ -257,10 +258,6 @@ int main(int argc, char** argv)
 	}
 
 		//Point tmp;
-	for (auto point : points) {
-		//std::cout << p << std::endl;
-		std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
-	}
 	std::cout << "ex suppression end" << std::endl;
 #endif
 #endif

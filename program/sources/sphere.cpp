@@ -76,7 +76,11 @@ double earth::H(Point p) {
 
 Point earth::geo(double h, double lat, double lon) {
 #ifdef PLANE_EARTH
-	return Point(sphere::a*lat, sphere::a*lon, h*100);
+	double caf = 45./atan(1);
+	double hcaf = 1;
+	//double caf = sphere::a;
+	return Point(lat*caf, lon*caf, h*hcaf);
+	//return Point(sphere::a*lat, sphere::a*lon, h*100);
 #endif
 	Point p;
 	p.by_geo(earth::local_R(lat, lon)+h, lat, lon);

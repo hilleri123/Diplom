@@ -361,16 +361,30 @@ Velocity PartOfFunction::stats() const
 PartOfFunction::~PartOfFunction()
 {}
 
-std::vector<Point> PartOfFunction::check(const Polygon& p) const
+std::vector<Suppression> PartOfFunction::check(const Polygon& p) const
 {
 	//std::cout << "+PartOfFunction check " << max_time() << std::endl;
-	std::vector<Point> result = _start.check(p);
-	std::vector<Point> tmp = _climb.check(p);
-	result.insert( result.end(), tmp.begin(), tmp.end() );
-	tmp = check_curves(p, _curves);
-	result.insert( result.end(), tmp.begin(), tmp.end() );
+	std::vector<Suppression> result;
+	std::vector<Point> tmp =  _start.check(p);
+	for (const Point& pp : tmp)
+		result.emplace_back(pp, _begin, _end, p);
+	tmp = _climb.check(p);
+	for (const Point& pp : tmp)
+		result.emplace_back(pp, _begin, _end, p);
+	//result.insert( result.end(), tmp.begin(), tmp.end() );
+	//tmp = check_curves(p, _curves);
+	//for (const Point& point : tmp)
+		//result.emplace_back(point, _begin, _end, p);
+	//result.insert( result.end(), tmp.begin(), tmp.end() );
 	tmp = _finish.check(p);
-	result.insert( result.end(), tmp.begin(), tmp.end() );
+	for (const Point& pp : tmp)
+		result.emplace_back(pp, _begin, _end, p);
+	//result.insert( result.end(), tmp.begin(), tmp.end() );
+	for (const auto& bz_curve : _curves) {
+		auto r = p.suppression(bz_curve);
+		if (r.first)
+			result.emplace_back(r.second, _begin, _end, p);
+	}
 	//std::cout << "-PartOfFunction check" << std::endl;
 
 	my_log::log_it(my_log::level::debug, __FUNCTION_NAME__, "found suppression "+std::to_string(result.size()));

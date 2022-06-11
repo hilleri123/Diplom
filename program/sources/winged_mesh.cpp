@@ -29,7 +29,7 @@ bool WingedEdgeMesh::add_polygon(const Polygon& pl)
 	for (std::size_t p_idx = 0; p_idx < p_ids.size(); p_idx++) {
 		std::array<std::size_t, pair_size> e_p = {p_ids[p_idx], p_ids[(p_idx+1)%p_ids.size()]};
 		auto ex_e_it = std::find_if(_edge_list.begin(), _edge_list.end(), 
-				[&e](const Edge& v){ 
+				[&e_p](const Edge& v){ 
 				for (std::size_t i = 0; i < v.first.size(); i++) {
 					bool any = false;
 					for (std::size_t j = 0; j < e_p.size(); j++) 
@@ -39,13 +39,13 @@ bool WingedEdgeMesh::add_polygon(const Polygon& pl)
 				return true;
 				});
 		if (ex_e_it == _edge_list.end()) {
-			for (auto p = e_p.begin(); p != e_p.end(); p++)
-				p->second.insert(_edge_list.size());
-			edges.push_back(_edge_list.size());
+			for (std::size_t p_idx : e_p)
+				_vertex_list[p_idx].second.insert(_edge_list.size());
+			edges[p_idx] = _edge_list.size();
 			_edge_list.emplace_back(e_p, std::set<std::size_t>({f_id}));
 		} else {
 			ex_e_it->second.insert(f_id);
-			edges.push_back(ex_e_it-_edge_list.begin());
+			edges[p_idx] = ex_e_it-_edge_list.begin();
 		}
 	}
 	Face f;
@@ -103,7 +103,7 @@ Polygon WingedEdgeMesh::polygon_at(std::size_t idx) const
 {		
 	const auto& edge_ids_arr = _face_list[idx];
 	std::set<std::size_t> points_ids;
-	for (auto edge_id = edge_ids_arr.begin(); edge_id != edge_ids_arr.end(); ++i) {
+	for (auto edge_id = edge_ids_arr.begin(); edge_id != edge_ids_arr.end(); ++edge_id) {
 		const Edge& e = _edge_list[*edge_id];
 		for (std::size_t point_idx : e.first) {
 			points_ids.insert(point_idx);

@@ -127,14 +127,14 @@ Function::~Function()
 
 
 
-std::vector<Point> Function::check(const WingedEdgeMesh& mesh) const
+std::vector<Suppression> Function::check(const WingedEdgeMesh& mesh) const
 {
 	//std::cout << "+function check" << std::endl;
-	std::vector<Point> result;
+	std::vector<Suppression> result;
 	for (auto i = _function.begin(); i < _function.end(); ++i) {
 		for (std::size_t idx = 0; idx < mesh.size(); idx++) {
 			Polygon p = mesh.polygon_at(idx);
-			std::vector<Point> tmp = i->first.check(p);
+			std::vector<Suppression> tmp = i->first.check(p);
 			result.insert( result.end(), tmp.begin(), tmp.end() );
 		}
 	}

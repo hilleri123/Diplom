@@ -57,7 +57,10 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 {
 	std::pair<bool, Point> res;
 	res.first = false;
-	const int steps_count = APPROXIMATE_NUM;
+#define LINE_SUPP
+#ifdef LINE_SUPP
+	//const int steps_count = APPROXIMATE_NUM;
+	const int steps_count = 6;
 	double step_len = curve.get_len() / steps_count;
 	for (double step = 0; step < steps_count; step++) {
 		Point point0 = curve(step*step_len);
@@ -69,8 +72,9 @@ std::pair<bool, Point> Polygon::suppression(const BzCurve& curve) const
 		}
 	}
 	return res;
+#endif
 
-#if 0
+#ifndef LINE_SUPP
 	double a = 0, b = 0, c = 0, d = 0;
 #define CALC_AXIS_A(axis) \
 	a += _ABC.axis() * (-curve.at(0).axis() + 3*curve.at(1).axis() - 3*curve.at(2).axis() + curve.at(3).axis());
