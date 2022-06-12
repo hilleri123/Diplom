@@ -20,6 +20,8 @@ struct Point2D
 	friend bool operator!=(Point2D p0, Point2D p1);
 	double length(const Point2D& p) const;
 	double x, y;
+
+	friend std::ostream& operator<<(std::ostream& s, const Point2D& p);
 };
 
 class LineSegment2D;

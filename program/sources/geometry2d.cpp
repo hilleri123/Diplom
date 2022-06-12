@@ -26,6 +26,12 @@ double Point2D::length(const Point2D& p) const
 	return sqrt(std::pow(p.x-x,2)+std::pow(p.y-y,2));
 }
 
+std::ostream& operator<<(std::ostream& s, const Point2D& p)
+{
+	s << "[" << p.x << ", " << p.y << "]";
+	return s;
+}
+
 LineSegment2D::LineSegment2D(Point p3d0, Point p3d1) 
 	: p0(p3d0.x() < p3d1.x() ? p3d0 : p3d1), 
 	p1(p3d0.x() < p3d1.x() ? p3d1 : p3d0)
@@ -122,19 +128,26 @@ std::pair<Point2D, Point2D> DirectedPolygon2D::touches(const Point2D& sight) con
 std::pair<Point2D, Point2D> make_new(const DirectedPolygon2D& pol, const Point2D& sight)
 {
 	const std::size_t pair_size = 2;
-	const double d = 1;
+	const double d = 0.1;
 	std::array<Point2D, pair_size> res;
 	auto tmp_t = pol.touches(sight);
 	std::array<Point2D, pair_size> touches = {tmp_t.first, tmp_t.second};
+	//std::cout << "touches " << touches[0] << ", " << touches[1] << std::endl;
 	for (std::size_t pos_in_pair = 0; pos_in_pair < pair_size; pos_in_pair++) {
 		const Point2D& touch = touches[pos_in_pair];
 		double k = -1. / LineSegment2D(touch, sight).k();
 		double b = touch.y - touch.x * k;
 		double D = d / sqrt(1+k*k);
-		double x_r = -touch.x + D;
-		double x_l = -touch.x - D;
+		double x_r = touch.x + D;
+		double x_l = touch.x - D;
 		Point2D p_r(x_r, k*x_r+b);
 		Point2D p_l(x_l, k*x_l+b);
+		//std::cout << "sight " << sight << " p_r " << p_r << " p_l " << p_l << std::endl;
+		if (std::min(touches[0].x, touches[1].x) <= p_r.x && p_r.x <= std::max(touches[0].x, touches[1].x))
+			res[pos_in_pair] = p_l;
+		else	
+			res[pos_in_pair] = p_r;
+		continue;
 		LineSegment2D l_r(sight, p_r);
 		LineSegment2D l_l(sight, p_l);
 		for (std::size_t pos = 0; pos < pol.points.size(); pos++) {
@@ -151,7 +164,7 @@ std::pair<Point2D, Point2D> make_new(const DirectedPolygon2D& pol, const Point2D
 			}
 		}
 	}
-
+	std::cout << "make_new " << res[0] <<  " " << res[1] << std::endl;
 	return std::make_pair(res[0], res[1]);
 }
 
@@ -162,7 +175,13 @@ Point2D add_point(const DirectedPolygon2D& pol, const Point2D& begin, const Poin
 	auto begin_p = make_new(pol, begin);
 	auto end_p = make_new(pol, end);
 	const std::size_t pair_size = 2;
-	std::array<std::array<Point2D, pair_size>, pair_size> points = {std::array<Point2D,pair_size>({begin_p.first, end_p.second}), std::array<Point2D, pair_size>({begin_p.second, end_p.first})};
+	std::array<std::array<Point2D, pair_size>, pair_size*pair_size> points = {
+		std::array<Point2D,pair_size>({begin_p.first, end_p.first}),
+	       	std::array<Point2D, pair_size>({begin_p.second, end_p.first}),
+		std::array<Point2D,pair_size>({begin_p.first, end_p.second}),
+	       	std::array<Point2D, pair_size>({begin_p.second, end_p.second})
+	};
+
 	for (auto i = points.begin(); i != points.end(); ++i) {
 		LineSegment2D line_b(begin, (*i)[0]);
 		LineSegment2D line_e(end, (*i)[1]);
@@ -174,11 +193,13 @@ Point2D add_point(const DirectedPolygon2D& pol, const Point2D& begin, const Poin
 		double s = begin.length(res_point) + end.length(res_point);
 		res.push_back(std::make_pair(res_point, s));
 	}
+	std::cout << "add_point " << res.size() << std::endl;
 	if (res.size() == 0)
 		return Point2D();
 	double min_s = -1;
 	auto min_it = res.begin();
 	for (auto i = res.begin(); i != res.end(); ++i) {
+		std::cout << "[" << i->first.x << ", " << i->first.y << "] s(" << i->second << ")" << std::endl;
 		if (i->second < min_s || min_s < 0) {
 			min_s = i->second;
 			min_it = i;

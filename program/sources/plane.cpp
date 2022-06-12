@@ -4,7 +4,12 @@
 
 Plane::Plane(Point p, Vector norm, Vector ox)
 	: _start_point(p), _conversion(&p, &ox, nullptr, &norm)
-{}
+{
+	_conversion.init();
+	//std::cout << p << std::endl;
+	//std::cout << _conversion.to_matrix() << std::endl;
+	//std::cout << _conversion.from_matrix() << std::endl;
+}
 
 std::pair<bool, std::pair<Point2D, Point2D>> Plane::add_polygon(const Polygon& p) const
 {
@@ -48,36 +53,59 @@ void Plane::add_polygons(const WingedEdgeMesh& mesh)
 			continue;
 		tmp.push_back(r.second);
 	}
-	std::vector<Point2D> res;
 	while (tmp.size() > 0) {
-		auto it = tmp.begin();
-		if (res.size() == 0) {
-			res.push_back(it->first);
-			res.push_back(it->second);
-			tmp.erase(it);
-			continue;
-		}
-		for (; it != tmp.end(); ++it) {
-			if (res.back() == it->second) {
+		std::vector<Point2D> res;
+		bool erased = false;
+		while (erased || res.size() == 0) {
+			erased = false;
+			auto it = tmp.begin();
+			if (res.size() == 0) {
 				res.push_back(it->first);
 				res.push_back(it->second);
 				tmp.erase(it);
-				break;
+				erased = true;
+				continue;
+			}
+			for (; it != tmp.end(); ++it) {
+				if (res.back() == it->second) {
+					res.push_back(it->first);
+					//res.push_back(it->second);
+					tmp.erase(it);
+					erased = true;
+					break;
+				} else if (res.back() == it->first) {
+					res.push_back(it->second);
+					//res.push_back(it->first);
+					tmp.erase(it);
+					erased = true;
+					break;
+				}
 			}
 		}
+#if 0
+		std::cout << "polygon (";
+		for (Point2D p : res) {
+			std::cout << "[" << p.x << ", " << p.y << "], ";
+		}
+		std::cout << " )" << std::endl;
+		_polygons.emplace_back(res.begin(), res.end());
+#endif
 	}
-	_polygons.emplace_back(res.begin(), res.end());
 	//Polygon new_p = _conversion.to(p);
 	
 }
 
 Point Plane::get_new_point(const Point& start, const Point& end) const
 {
-	Point2D p_start = _conversion.to(start);
-	Point2D p_end = _conversion.to(end);
+	Point pp_start = _conversion.to(start);
+	Point pp_end = _conversion.to(end);
+	Point2D p_start(pp_start.x(), pp_start.y());
+	Point2D p_end(pp_end.x(), pp_end.y());
 	Point2D res;
 	for (const auto& p : _polygons) {
-		res = add_point(p, start, end);
+		Point2D tmp = add_point(p, start, end);
+		if (tmp != Point2D())
+			res = tmp;
 	}
 	return _conversion.from(Point(res.x, res.y, 0));
 }
