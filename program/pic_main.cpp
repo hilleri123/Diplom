@@ -57,10 +57,10 @@ int main(int argc, char** argv)
 	double lon_start = 0;
 	double lon_end = pi*2.;
 #else
-	double lat_start = -3*dlat;
-	double lat_end = 7*dlat;
-	double lon_start = 0*dlon;
-	double lon_end = 10*dlon;
+	double lat_start = -8*dlat;
+	double lat_end = 12*dlat;
+	double lon_start = -10*dlon;
+	double lon_end = 5*dlon;
 #endif
 //#define PART
 #ifdef PART
@@ -88,16 +88,72 @@ int main(int argc, char** argv)
 	namespace po = boost::program_options;
 
 	double h = 1;
-	std::string out = "results/0pic_res.txt";
+	std::string out = "results/pic_result.txt";
+	std::cout << h << std::endl;
+	std::ofstream stream(out);
 
 	std::vector<std::pair<Point, Velocity>> data;
-	Velocity v(0.05);
+	Velocity v(0.3);
 
 	std::vector<Point> trj = {
-		Point(1,0,2),
-		Point(5,5,2),
-		Point(0,9,2),
+		Point(0,0,2),
+		Point(-6,2,2),
+		//Point(-2,6.5,2),
+		//Point(5,1,2),
+		//Point(5,5,2),
+		//Point(2,9,2),
+		Point(-10,0,2),
+		//Point(0,10,2),
 	};
+
+#define CAL
+#ifdef CAL
+	std::array<Rotate, 2> rotates;
+	Rotate *tmp_rotate;
+	Vector ox(Point(1,0,0));
+	Vector oy(Point(0,1,0));
+	Conversion* con;
+	double T = 0;
+	{
+		Vector s(Point(-1,0,0));
+		Vector d = Vector(trj[1])-Vector(trj[0]);
+		INIT(con, Conversion, &trj[0], &ox, &oy, nullptr);
+		INIT(tmp_rotate, Rotate, con->to(trj[0]), con->to(s), con->to(trj[1]), con->to(Vector(Point(-2,1,0))), v, con->from_matrix());
+		if (tmp_rotate != nullptr) {
+			rotates[0] = *tmp_rotate;
+			T += rotates[0].max_time();
+		} else
+			std::cout << "shit 0" << std::endl;
+	}
+	{
+		Vector s = rotates[0].direction()*(-1);
+		Vector d = Vector(trj[2])-Vector(trj[1]);
+		INIT(con, Conversion, &trj[1], &ox, &oy, nullptr);
+		INIT(tmp_rotate, Rotate, con->to(trj[1]), con->to(s), con->to(trj[2]), con->to(Vector(Point(-1,-1,0))), v, con->from_matrix());
+		if (tmp_rotate != nullptr) {
+			rotates[1] = *tmp_rotate;
+			T += rotates[1].max_time();
+		} else
+			std::cout << "shit 1" << std::endl;
+	}
+	for (double t = 0; t < T; t += h) {
+		Point point;
+		double tmp_t = t;
+		for (std::size_t i = 0; i < rotates.size(); tmp_t-=rotates[i++].max_time())
+			if (tmp_t < rotates[i].max_time()) {
+				point = rotates[i](tmp_t);
+				break;
+			}
+		if (stream.is_open()) {
+			stream << point.x() << " " << point.y() << " " << point.z() << std::endl;
+		}
+	}
+	if (stream.is_open()) {
+		stream.close();
+	}
+	return 0;
+};
+#else 
 
 	Vector pl_n(Point(0,0,1)), pl_x(Point(1,0,0));
 
@@ -107,29 +163,54 @@ int main(int argc, char** argv)
 	//TrajectoryLoader loader;
 	//auto& data = loader.csv_parser_read(in);
 	Function a(data);
-	
-	std::cout << h << std::endl;
 	std::cout << a.max_time() << std::endl;
-	std::ofstream stream(out);
+	
+
+	int count = 0;
 
 	std::vector<Suppression> points = a.check(mesh);
-	std::cout << "suppression start" << std::endl;
-	for (auto sup : points) {
-		Point point = sup.sup;
-		std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
+	while (points.size() > 0 && count-- > 0) {
+		std::cout << "suppression start" << std::endl;
+		for (auto sup : points) {
+			Point point = sup.sup;
+			std::cout << point << std::endl;
+		}
+		std::cout << "suppression end" << std::endl;
+	
+		std::cout << "new start" << std::endl;
+		Point new_point;
+		bool set = false;
+		for (auto sup : points) {
+			Point point = sup.sup;
+			Plane pl(point, pl_n, pl_x);
+			pl.add_polygons(mesh);
+			auto p = pl.get_new_point(sup.begin, sup.end);
+			std::cout << p << std::endl;
+			if (!set) {
+				new_point = p;
+				set = true;
+			}
+		}
+		std::cout << "new end" << std::endl;
+		const auto& sup = points.front();
+		auto j = ++data.begin();
+		std::cout << "data.size = " << data.size() << std::endl;
+		for (auto i = data.begin(); i != data.end() && j != data.end(); ++i, ++j) {
+			if (i->first == sup.begin && j->first == sup.end) {
+				data.insert(j, std::make_pair(new_point, v));
+				break;
+			}
+		}
+		std::cout << "data.size = " << data.size() << std::endl;
+		for (const auto& pair : data)
+			std::cout << pair.first << " ";
+		std::cout << std::endl;
+		std::cout << a.max_time() << std::endl;
+		a = Function(data);
+		std::cout << a.max_time() << std::endl;
+		points = a.check(mesh);
 	}
-	std::cout << "suppression end" << std::endl;
-
-	std::cout << "new start" << std::endl;
-	for (auto sup : points) {
-		Point point = sup.sup;
-		Plane pl(point, pl_n, pl_x);
-		pl.add_polygons(mesh);
-		auto p = pl.get_new_point(sup.begin, sup.end);
-		std::cout << p << std::endl;
-	}
-	std::cout << "new end" << std::endl;
-
+	
 	for (double time = 0; time < a.max_time()+h; time+=h) {
 		auto pair = a(time);
 		Point point = std::get<0>(pair);
@@ -159,7 +240,7 @@ int main(int argc, char** argv)
 			auto res = p.suppression(l);
 			if (res.first.first) {
 				Point point = res.first.second;
-				std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
+				std::cout << point << std::endl;
 			}
 		}
 	}
@@ -183,7 +264,7 @@ int main(int argc, char** argv)
 			auto res = p.suppression(l);
 			if (res.first.first) {
 				Point point = res.first.second;
-				std::cout << point.x() << " " << point.y() << " " << point.z() << std::endl;
+				std::cout << point << std::endl;
 			}
 		}
 	}
@@ -192,3 +273,4 @@ int main(int argc, char** argv)
 	return 0;
 };
 
+#endif

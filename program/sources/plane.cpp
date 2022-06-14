@@ -88,8 +88,8 @@ void Plane::add_polygons(const WingedEdgeMesh& mesh)
 			std::cout << "[" << p.x << ", " << p.y << "], ";
 		}
 		std::cout << " )" << std::endl;
-		_polygons.emplace_back(res.begin(), res.end());
 #endif
+		_polygons.emplace_back(res.begin(), res.end());
 	}
 	//Polygon new_p = _conversion.to(p);
 	

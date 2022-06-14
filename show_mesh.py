@@ -5,11 +5,16 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from stl import mesh
 import numpy as np
+import meshio
 
 
 
 def show_stl(figure):
-    file_name = './meshes/mesh.stl'
+    file_name = './meshes/pic_mesh.stl'
+    trj_file_name = './results/pic_result.txt'
+    color_mesh_file = './meshes/color_mesh.'
+    formats = []
+    #formats = ['inp','avs','obj','off','vtk','vtu']
     print(f'checking {file_name}')
     if os.path.exists(file_name):
         print('exists')
@@ -61,6 +66,49 @@ def show_stl(figure):
             return 'tab:green'
 
         colors = [chose_color(face) for idx, face in enumerate(your_mesh.vectors)]
+
+        #SAVE
+        def color_np(color):
+            res = np.array([0,0,0,1])
+            if color == 'tab:blue':
+                res[2] = 1
+            if color == 'tab:brown':
+                res[0] = 0.5
+                res[1] = 0.5
+            if color == 'tab:green':
+                res[1] = 1
+            return res
+        colors_to_save = np.array([color_np(c) for c in colors])
+        points_to_save = []
+        #for p in your_mesh.points:
+            #points_to_save.append(p[:3])
+            #points_to_save.append(p[3:6])
+            #points_to_save.append(p[6:9])
+        #points_to_save = np.array(points_to_save)
+        vecs_to_save = []
+        for v in vec:
+            res = np.zeros(3)
+            for pos, p in enumerate(v):
+                all_e = False
+                for idx, pp in enumerate(points_to_save):
+                    all_e = all([v0 == v1 for v0, v1 in zip(p, pp)])
+                    if all_e:
+                        res[pos] = idx
+                        break
+                if not all_e:
+                    points_to_save.append(p)
+            #print(res)
+            vecs_to_save.append(res)
+        vecs_to_save = np.array(vecs_to_save)
+        #vecs_to_save = np.array([np.array([np.where(points_to_save == p) for p in v]) for v in vec])
+        cells = [('triangle', vecs_to_save)]
+
+        mesh_to_save = meshio.Mesh(np.array(points_to_save), cells, cell_data={'a':[colors_to_save]})
+        for file_format in formats:
+            print(f'{color_mesh_file}{file_format}')
+            mesh_to_save.write(color_mesh_file+file_format)
+        #return
+
         collection = mplot3d.art3d.Poly3DCollection(vec, facecolor = colors)
         #collection.set_alpha(0.7)
         ax.add_collection3d(collection)
@@ -68,7 +116,8 @@ def show_stl(figure):
         ax.auto_scale_xyz(scale, scale, scale)
 
 
-        file_name = './results/result.txt'
+        #file_name = './results/0pic_res.txt'
+        file_name = trj_file_name
         print(f'checking {file_name}')
         N = 10000
         xs = np.zeros(N)
